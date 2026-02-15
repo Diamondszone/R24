@@ -65,7 +65,8 @@
         justify-content: space-between;
         align-items: center;
         width: 100%;
-        margin-bottom: 10px;
+        /* margin-bottom: 10px; */
+        margin-bottom: -20px;
     }
     .navbar-bottom {
         display: flex;
@@ -98,7 +99,7 @@
         color: #ffffff;
     }
     .path-info a {
-        color: #007bff;
+        color: #ffffff;
         text-decoration: none;
     }
     .path-info a:hover {
@@ -214,6 +215,7 @@
     .btn-info:hover {
         background-color: #1e7e34;
         border-color: #1e7e34;
+        color: #ffffff;
     }
     
     /* Table Dark Theme */
@@ -327,13 +329,13 @@
     
     /* Buttons */
     .btn-primary {
-        background-color: #007bff;
-        border-color: #0056b3;
+        background-color: #28a745;
+        border-color: #1e7e34;
         color: #ffffff;
     }
     .btn-primary:hover {
-        background-color: #0056b3;
-        border-color: #004085;
+        background-color: #1e7e34;
+        border-color: #1e7e34;
     }
     .btn-secondary {
         background-color: #6c757d;
@@ -346,17 +348,22 @@
     }
     
     /* Breadcrumb Links */
-    .path-info a {
+    /* .path-info a {
         color: #007bff;
         text-decoration: none;
     }
     .path-info a:hover {
         color: #ffc107;
         text-decoration: underline;
-    }
+    } */
     
     /* File Icons */
     .fa-folder {
+        color: #ffc107;
+        margin-right: 5px;
+    }
+
+    i.fa-regular.fa-file {
         color: #ffc107;
         margin-right: 5px;
     }
@@ -814,8 +821,8 @@
                             <div class="date-example">Gunakan ekstensi file yang sesuai</div>
                         </div>
                         <div class="col-md-12 mt-3">
-                            <label for="file_content">File content (optional):</label>
-                            <textarea class="form-control" name="file_content" rows="5" placeholder="Isi file (kosongkan untuk file kosong)"></textarea>
+                            <label for="file_content">File content:</label>
+                            <textarea class="form-control" name="file_content" rows="5" placeholder="Isi file"></textarea>
                         </div>
                         <div class="col-md-12 mt-3">
                             <input type="submit" class="btn btn-info" name="create_file" value="Create File">
